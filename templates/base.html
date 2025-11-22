@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroERP | Gestão Premium</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header>
+        <div class="navbar-container">
+            <div class="logo">
+                <h1>MicroERP</h1>
+            </div>
+            <nav>
+                <a href="{{ url_for('index') }}">Início</a>
+                
+                {% if current_user.is_authenticated %}
+                    {% if current_user.email == "admin@barbearia.com" %}
+                        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                        <a href="{{ url_for('list_services') }}">Serviços</a>
+                    {% else %}
+                        <a href="{{ url_for('book_service') }}">Agendar</a>
+                        <a href="{{ url_for('dashboard') }}">Meus Horários</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}" class="btn-nav">Sair</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Login</a>
+                    <a href="{{ url_for('register') }}" class="btn-nav">Criar Conta</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert" style="padding: 15px; margin-bottom: 20px; border-radius: 8px; color: white; font-weight: 500; 
+                        background-color: {{ '#e74c3c' if category == 'error' else '#2ecc71' }};">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+        
+    </div>
+
+</body>
+</html>

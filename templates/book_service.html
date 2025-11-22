@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 30px;">Escolha um Serviço</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+        {% for s in services %}
+        <div class="card" style="margin-bottom: 0; transition: transform 0.2s;">
+            <h3 style="margin-top: 0;">{{ s.name }}</h3>
+            <p style="color: #666; font-size: 14px;">
+                ⏱️ {{ s.duration_minutes }} min <br>
+                💰 R$ {{ s.price }}
+            </p>
+            <a href="{{ url_for('book_time', service_id=s.id) }}" class="btn btn-primary" style="width: 100%; box-sizing: border-box; text-align: center;">
+                Selecionar
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <br>
+    <div style="text-align: center;">
+        <a href="{{ url_for('index') }}" style="color: #777;">Cancelar</a>
+    </div>
+</div>
+{% endblock %}

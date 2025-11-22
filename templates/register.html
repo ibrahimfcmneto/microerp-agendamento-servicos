@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 40px auto;">
+    <div class="card">
+        <h2 style="text-align: center; color: var(--primary-color);">Crie sua Conta</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">É rápido, fácil e gratuito.</p>
+
+        <form method="POST">
+            <label style="font-weight: 600; font-size: 14px;">Nome Completo</label>
+            <input type="text" name="name" placeholder="Ex: João Silva" required>
+
+            <label style="font-weight: 600; font-size: 14px;">Email</label>
+            <input type="email" name="email" placeholder="seu@email.com" required>
+
+            <label style="font-weight: 600; font-size: 14px;">Telefone (WhatsApp)</label>
+            <input type="text" name="phone" placeholder="(xx) 9xxxx-xxxx">
+
+            <label style="font-weight: 600; font-size: 14px;">Senha</label>
+            <input type="password" name="password" placeholder="Crie uma senha segura" required>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Criar Conta</button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 20px; font-size: 14px;">
+            Já possui cadastro? <a href="{{ url_for('login') }}" style="color: var(--primary-color);">Fazer Login</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
