@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="hero card">
+        <h1>Gestão Inteligente & Beleza</h1>
+        <p>A maneira mais simples e elegante de agendar seus serviços. Cuide de si mesmo com apenas alguns cliques.</p>
+        
+        {% if current_user.is_authenticated %}
+            <p>Olá, <b>{{ current_user.name }}</b>! Bem-vindo de volta.</p>
+            <div style="margin-top: 20px;">
+                {% if current_user.email == "admin@barbearia.com" %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Aceder ao Painel do Gestor</a>
+                {% else %}
+                    <a href="{{ url_for('book_service') }}" class="btn btn-primary">📅 Agendar Horário</a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Ver Meus Agendamentos</a>
+                {% endif %}
+            </div>
+        {% else %}
+            <div style="margin-top: 20px;">
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Começar Agora</a>
+                <a href="{{ url_for('login') }}" class="btn btn-secondary">Já tenho conta</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="kpi-container">
+        <div class="kpi-card" style="border-bottom-color: #ddd;">
+            <h3 style="color:var(--primary-color)">Rápido</h3>
+            <p style="font-size:14px; color:#666">Agende em menos de 1 minuto.</p>
+        </div>
+        <div class="kpi-card" style="border-bottom-color: #ddd;">
+            <h3 style="color:var(--primary-color)">Seguro</h3>
+            <p style="font-size:14px; color:#666">Seus dados protegidos.</p>
+        </div>
+        <div class="kpi-card" style="border-bottom-color: #ddd;">
+            <h3 style="color:var(--primary-color)">Online</h3>
+            <p style="font-size:14px; color:#666">Disponível 24 horas por dia.</p>
+        </div>
+    </div>
+{% endblock %}

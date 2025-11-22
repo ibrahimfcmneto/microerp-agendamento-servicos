@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+        <h2 style="color: var(--primary-color); margin-bottom: 20px;">📝 Agendamento Manual</h2>
+        <p style="color: #666;">Use esta tela para registrar agendamentos feitos por telefone ou presencialmente.</p>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+        <form method="POST">
+            <label style="font-weight: 600;">1. Escolha o Cliente</label>
+            <select name="client_id" required>
+                <option value="" disabled selected>Selecione um cliente...</option>
+                {% for client in clients %}
+                    <option value="{{ client.id }}">{{ client.name }} ({{ client.email }})</option>
+                {% endfor %}
+            </select>
+
+            <label style="font-weight: 600;">2. Escolha o Serviço</label>
+            <select name="service_id" required>
+                <option value="" disabled selected>Selecione o serviço...</option>
+                {% for service in services %}
+                    <option value="{{ service.id }}">{{ service.name }} — R$ {{ service.price }}</option>
+                {% endfor %}
+            </select>
+
+            <div style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                    <label style="font-weight: 600;">3. Data</label>
+                    <input type="date" name="date" required>
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-weight: 600;">Hora</label>
+                    <input type="time" name="time" required>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-primary" style="flex: 1;">💾 Salvar Agendamento</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

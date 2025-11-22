@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 40px auto; text-align: center;">
+    <div class="card">
+        <h1 style="font-size: 50px; margin: 0;">🎉</h1>
+        <h2 style="color: #27ae60;">Agendamento Confirmado!</h2>
+        <p>Seu horário foi reservado com sucesso.</p>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: left; margin: 20px 0;">
+            <p><strong>✂️ Serviço:</strong> {{ service.name }}</p>
+            <p><strong>📅 Data:</strong> {{ booking_time.strftime('%d/%m/%Y') }}</p>
+            <p><strong>⏰ Horário:</strong> {{ booking_time.strftime('%H:%M') }}</p>
+            <p><strong>💰 Valor:</strong> R$ {{ service.price }}</p>
+        </div>
+
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary" style="width: 100%;">Ver Meus Agendamentos</a>
+    </div>
+</div>
+{% endblock %}

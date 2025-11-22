@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% if current_user.email == "admin@barbearia.com" %}
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>👓 Painel do Gestor</h2>
+            <div>
+                <a href="{{ url_for('create_appointment_admin') }}" class="btn btn-primary" style="margin-right: 10px;">+ Agendar Manual</a>
+                <a href="{{ url_for('manage_working_hours') }}" class="btn btn-secondary">⚙️ Horários</a>
+            </div>
+        </div>
+
+        <div class="kpi-container">
+            <div class="kpi-card">
+                <div class="kpi-label">Receita Estimada</div>
+                <div class="kpi-value">R$ {{ "%.2f"|format(receita) }}</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Taxa de No-Show</div>
+                <div class="kpi-value" style="color: #e74c3c;">{{ "%.1f"|format(taxa_no_show) }}%</div>
+                <small style="color: #999;">Baseado em {{ total_finalized }} finalizados</small>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📅 Agenda de Hoje e Futuro</h3>
+            <ul class="appointment-list">
+                {% for app in appointments %}
+                <li>
+                    <div>
+                        <strong style="font-size: 18px; color: var(--primary-color);">{{ app.start_time.strftime('%d/%m às %H:%M') }}</strong>
+                        <br>
+                        <span>{{ app.client.name }} — {{ app.service.name }}</span>
+                    </div>
+                    
+                    <div style="text-align: right;">
+                        <span class="status-badge status-{{ app.status.lower() }}">{{ app.status }}</span>
+                        
+                        {% if app.status == 'CONFIRMED' %}
+                        <div style="margin-top: 10px;">
+                            <a href="{{ url_for('update_status', id=app.id, new_status='COMPLETED') }}" style="color:green; font-weight:bold; font-size:13px; margin-right:10px; text-decoration:none;">✅ Concluir</a>
+                            <a href="{{ url_for('update_status', id=app.id, new_status='NO_SHOW') }}" style="color:red; font-weight:bold; font-size:13px; text-decoration:none;">❌ Faltou</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    {% else %}
+        
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>📅 Meus Agendamentos</h2>
+                <a href="{{ url_for('book_service') }}" class="btn btn-primary">Novo Agendamento</a>
+            </div>
+
+            {% if not appointments %}
+                <p style="text-align: center; color: #777; padding: 20px;">Você ainda não possui agendamentos.</p>
+            {% else %}
+                <ul class="appointment-list">
+                    {% for app in appointments %}
+                    <li>
+                        <div>
+                            <strong>{{ app.start_time.strftime('%d/%m/%Y às %H:%M') }}</strong>
+                            <br>
+                            <span style="color: #555;">{{ app.service.name }} (R$ {{ app.service.price }})</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <span class="status-badge status-{{ app.status.lower() }}">{{ app.status }}</span>
+                            
+                            {% if app.status in ['CONFIRMED', 'PENDING'] %}
+                                <a href="{{ url_for('cancel_appointment_client', id=app.id) }}" onclick="return confirm('Tem certeza?')" class="btn btn-danger" style="padding: 5px 15px; font-size: 12px;">Cancelar</a>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+    {% endif %}
+
+{% endblock %}

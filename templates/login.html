@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 50px auto;">
+    <div class="card" style="text-align: center;">
+        <h2 style="color: var(--primary-color); margin-bottom: 20px;">Bem-vindo de volta</h2>
+        <p style="color: #666; margin-bottom: 30px;">Insira seus dados para acessar.</p>
+
+        <form method="POST">
+            <div style="text-align: left;">
+                <label style="font-weight: 600; font-size: 14px;">Email</label>
+                <input type="email" name="email" placeholder="seu@email.com" required>
+            </div>
+
+            <div style="text-align: left;">
+                <label style="font-weight: 600; font-size: 14px;">Senha</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
+        </form>
+        
+        <div style="margin-top: 20px; font-size: 14px;">
+            <a href="{{ url_for('register') }}" style="color: var(--primary-color); text-decoration: none;">
+                Não tem conta? <b>Crie agora</b>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
