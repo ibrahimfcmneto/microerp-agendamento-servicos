@@ -1,40 +1,65 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="hero card">
-        <h1>Gestão Inteligente & Beleza</h1>
-        <p>A maneira mais simples e elegante de agendar seus serviços. Cuide de si mesmo com apenas alguns cliques.</p>
+    <div class="hero card" style="
+        background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=2074&auto=format&fit=crop');
+        background-size: cover; background-position: center; border: none; margin-bottom: 60px; padding: 80px 40px;">
         
-        {% if current_user.is_authenticated %}
-            <p>Olá, <b>{{ current_user.name }}</b>! Bem-vindo de volta.</p>
-            <div style="margin-top: 20px;">
+        <div style="position: relative; z-index: 2;">
+            <h4 style="color: var(--gold); letter-spacing: 3px;">ESTILO & TRADIÇÃO</h4>
+            <h1 style="font-size: 56px; margin-bottom: 20px;">NÃO É APENAS UM CORTE,<br>É UMA <span style="color: var(--gold)">EXPERIÊNCIA.</span></h1>
+            <p style="font-size: 18px; color: #ccc; max-width: 500px; margin-bottom: 40px;">
+                Transforme o seu visual com os nossos especialistas. Ambiente clássico, técnica moderna.
+            </p>
+            
+            {% if current_user.is_authenticated %}
                 {% if current_user.email == "admin@barbearia.com" %}
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Aceder ao Painel do Gestor</a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Aceder ao Painel</a>
                 {% else %}
-                    <a href="{{ url_for('book_service') }}" class="btn btn-primary">📅 Agendar Horário</a>
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Ver Meus Agendamentos</a>
+                    <a href="{{ url_for('book_service') }}" class="btn btn-primary">AGENDAR AGORA</a>
                 {% endif %}
-            </div>
-        {% else %}
-            <div style="margin-top: 20px;">
-                <a href="{{ url_for('register') }}" class="btn btn-primary">Começar Agora</a>
-                <a href="{{ url_for('login') }}" class="btn btn-secondary">Já tenho conta</a>
-            </div>
-        {% endif %}
+            {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary">COMEÇAR AGORA</a>
+            {% endif %}
+        </div>
     </div>
 
-    <div class="kpi-container">
-        <div class="kpi-card" style="border-bottom-color: #ddd;">
-            <h3 style="color:var(--primary-color)">Rápido</h3>
-            <p style="font-size:14px; color:#666">Agende em menos de 1 minuto.</p>
+    <div class="kpi-container" style="margin-bottom: 80px;">
+        <div class="kpi-card">
+            <h2 style="color:var(--gold)">01.</h2>
+            <h3 style="color:white">MARCAÇÃO</h3>
+            <p style="font-size:14px; color:#666">Sistema online 24h.</p>
         </div>
-        <div class="kpi-card" style="border-bottom-color: #ddd;">
-            <h3 style="color:var(--primary-color)">Seguro</h3>
-            <p style="font-size:14px; color:#666">Seus dados protegidos.</p>
+        <div class="kpi-card">
+            <h2 style="color:var(--gold)">02.</h2>
+            <h3 style="color:white">AMBIENTE</h3>
+            <p style="font-size:14px; color:#666">Wifi e café premium.</p>
         </div>
-        <div class="kpi-card" style="border-bottom-color: #ddd;">
-            <h3 style="color:var(--primary-color)">Online</h3>
-            <p style="font-size:14px; color:#666">Disponível 24 horas por dia.</p>
+        <div class="kpi-card">
+            <h2 style="color:var(--gold)">03.</h2>
+            <h3 style="color:white">MESTRES</h3>
+            <p style="font-size:14px; color:#666">Barbeiros experientes.</p>
+        </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: 80px;">
+        <div class="barber-photo-container">
+            <img src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?q=80&w=2069&auto=format&fit=crop" alt="Barbeiro" class="barber-photo">
+        </div>
+
+        <div>
+            <h4 style="color: var(--gold);">O NOSSO ESPECIALISTA</h4>
+            <h2 class="section-title" style="font-size: 42px; line-height: 1.2; color: white;">JERRY PATEL</h2>
+            <p style="color: #aaa; margin-bottom: 30px;">
+                "A barbearia não é apenas sobre cortar cabelo. É sobre criar uma identidade."
+                Com prémios internacionais e uma tesoura afiada, o Jerry traz o estilo clássico para a nossa cidade.
+            </p>
+            <ul style="color: #777; padding-left: 20px; list-style-type: square; margin-bottom: 30px;">
+                <li>2019: Barbeiro do Ano</li>
+                <li>2021: Melhor Corte Clássico</li>
+                <li>Mestre em Navalha</li>
+            </ul>
+            <a href="{{ url_for('book_service') }}" class="btn btn-secondary">VER SERVIÇOS</a>
         </div>
     </div>
 {% endblock %}
