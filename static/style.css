@@ -1,37 +1,47 @@
-/* Importando fonte moderna (Poppins) */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+/* --- static/style.css (CÓDIGO COMPLETO) --- */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Poppins:wght@300;400;500;600&display=swap');
 
 :root {
-    --primary-color: #007CC3; /* O azul solicitado */
-    --primary-dark: #005fa3;
-    --bg-color: #f4f7fa;
-    --text-color: #333;
-    --card-bg: #ffffff;
-    --shadow: 0 10px 30px rgba(0, 124, 195, 0.08); /* Sombra azulada suave */
-    --radius: 12px;
+    --gold: #C5A059;
+    --gold-hover: #d4af37;
+    --bg-dark: #111111;
+    --bg-card: #1c1c1c;
+    --text-main: #ffffff;
+    --text-muted: #aaaaaa;
+    --border-color: #333333;
 }
 
 body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
     font-family: 'Poppins', sans-serif;
-    background-color: var(--bg-color);
     margin: 0;
     padding: 0;
-    color: var(--text-color);
     line-height: 1.6;
 }
 
-/* --- Header / Barra de Navegação --- */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-top: 0;
+}
+
+a { text-decoration: none; transition: 0.3s; }
+
+/* --- Header --- */
 header {
-    background: white;
-    padding: 15px 0;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    background: var(--bg-dark);
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
 }
 
 .navbar-container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
     display: flex;
@@ -39,203 +49,485 @@ header {
     align-items: center;
 }
 
-.logo h1 {
-    color: var(--primary-color);
-    font-size: 24px;
-    font-weight: 700;
-    margin: 0;
-    letter-spacing: -0.5px;
-}
+.logo h1 { color: var(--text-main); font-size: 28px; margin: 0; }
+.logo span { color: var(--gold); }
 
 nav a {
-    text-decoration: none;
-    color: #555;
+    color: var(--text-muted);
+    font-size: 14px;
     font-weight: 500;
-    margin-left: 25px;
-    transition: color 0.3s;
-    font-size: 15px;
+    margin-left: 30px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-nav a:hover {
-    color: var(--primary-color);
-}
+nav a:hover { color: var(--gold); }
 
 nav a.btn-nav {
-    background-color: var(--primary-color);
-    color: white;
+    border: 1px solid var(--gold);
+    color: var(--gold);
     padding: 8px 20px;
-    border-radius: 30px; /* Botão pílula */
+    border-radius: 0;
 }
+nav a.btn-nav:hover { background-color: var(--gold); color: black; }
 
-nav a.btn-nav:hover {
-    background-color: var(--primary-dark);
-    color: white;
-}
+/* --- Layout --- */
+.container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
 
-/* --- Layout Principal --- */
-.container {
-    max-width: 1100px;
-    margin: 40px auto;
-    padding: 0 20px;
-}
-
-/* --- Cartões (Cards) --- */
+/* --- Cards --- */
 .card {
-    background: var(--card-bg);
-    padding: 30px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
+    background: var(--bg-card);
+    padding: 40px;
+    border: 1px solid var(--border-color);
     margin-bottom: 30px;
-    border: 1px solid rgba(0, 124, 195, 0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    color: var(--text-muted);
 }
+.card h1, .card h2, .card h3 { color: var(--text-main); }
 
 /* --- Botões --- */
-button, .btn {
+.btn {
     display: inline-block;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
+    padding: 12px 30px;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 14px;
     cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    text-decoration: none;
+    border: 1px solid transparent;
     transition: all 0.3s ease;
     text-align: center;
-    font-family: 'Poppins', sans-serif;
 }
 
-.btn-primary {
-    background-color: var(--primary-color);
-    color: white;
-    box-shadow: 0 4px 15px rgba(0, 124, 195, 0.3);
-}
+.btn-primary { background-color: transparent; border: 1px solid var(--gold); color: var(--gold); }
+.btn-primary:hover { background-color: var(--gold); color: #000; }
 
-.btn-primary:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-}
+.btn-secondary { background-color: #333; color: white; border: 1px solid #333; }
+.btn-secondary:hover { background-color: #444; border-color: #444; }
 
-.btn-secondary {
-    background-color: #eef2f5;
-    color: var(--primary-color);
-}
-
-.btn-secondary:hover {
-    background-color: #dce4ea;
-}
-
-.btn-danger {
-    background-color: #fff0f0;
-    color: #e74c3c;
-}
-.btn-danger:hover {
-    background-color: #ffe5e5;
-}
-
-/* --- Formulários --- */
+/* --- Inputs --- */
 input, select {
-    width: 100%;
-    padding: 12px 15px;
-    margin: 8px 0 20px;
-    border: 1px solid #e1e1e1;
-    border-radius: 8px;
-    background-color: #fafafa;
-    font-family: 'Poppins', sans-serif;
-    box-sizing: border-box;
-    transition: border 0.3s;
+    width: 100%; padding: 15px; margin: 8px 0 20px;
+    background-color: #0a0a0a; border: 1px solid var(--border-color);
+    color: white; font-family: 'Poppins', sans-serif; box-sizing: border-box;
 }
+input:focus, select:focus { outline: none; border-color: var(--gold); }
 
-input:focus, select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    background-color: white;
-}
-
-/* --- Dashboard KPI Cards --- */
-.kpi-container {
+/* --- HERO SECTION (Esta é a parte que faltava) --- */
+.hero {
+    /* Background definido no HTML via style="..." */
+    padding: 100px 20px;
+    text-align: left;
+    border: none;
+    position: relative;
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 400px;
+}
+.hero h1 { font-size: 60px; color: white; line-height: 1.1; margin-bottom: 20px; }
+.hero p { color: #cccccc; font-size: 18px; max-width: 500px; margin-bottom: 30px; }
+
+/* --- KPIs --- */
+.kpi-container { display: flex; gap: 20px; margin-bottom: 30px; }
+.kpi-card {
+    flex: 1; background: var(--bg-card); padding: 20px;
+    border-bottom: 2px solid var(--gold); text-align: center;
+}
+
+/* --- NOVOS: Grid e Imagens --- */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+@media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+.section-title::after {
+    content: ''; display: block; width: 60px; height: 3px;
+    background: var(--gold); margin-top: 10px;
+}
+
+.barber-photo-container { border: 1px solid var(--gold); padding: 15px; }
+.barber-photo { width: 100%; height: auto; display: block; filter: grayscale(20%); }
+.barber-photo:hover { filter: grayscale(0%); }
+
+/* Cards de Serviço */
+.service-card { padding: 0; position: relative; overflow: hidden; }
+.service-img { width: 100%; height: 200px; object-fit: cover; border-bottom: 2px solid var(--gold); }
+.service-content { padding: 25px; }
+.price-tag { color: var(--gold); font-family: 'Oswald', sans-serif; font-size: 24px; float: right; }
+
+/* --- Estilos da Página de Seleção de Horário --- */
+
+/* Remove o fundo branco padrão de alguns formulários */
+.date-form-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    border-radius: 8px;
     margin-bottom: 30px;
 }
 
-.kpi-card {
-    flex: 1;
-    background: white;
-    padding: 20px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
+/* Input de data personalizado para Dark Mode */
+input[type="date"] {
+    background-color: #111;
+    color: white;
+    border: 1px solid #444;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 4px;
+    width: 100%;
+}
+/* Ícone do calendário branco (funciona na maioria dos browsers modernos) */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+/* Grelha de Horários */
+.time-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+    margin: 30px 0;
+}
+
+/* Botão de Horário (Radio Button visual) */
+.time-btn {
+    background: transparent;
+    border: 1px solid #444;
+    color: white;
+    padding: 15px 0;
     text-align: center;
-    border-bottom: 4px solid var(--primary-color);
-}
-
-.kpi-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin: 10px 0;
-}
-
-.kpi-label {
-    color: #777;
-    font-size: 14px;
-    text-transform: uppercase;
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
     letter-spacing: 1px;
+    transition: all 0.2s ease;
+    border-radius: 4px;
 }
 
-/* --- Tabelas/Listas --- */
-ul.appointment-list {
-    list-style: none;
-    padding: 0;
+.time-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
 }
 
-ul.appointment-list li {
-    background: white;
-    border-bottom: 1px solid #f0f0f0;
+/* Estado Selecionado (Quando clica) */
+.time-btn.selected {
+    background-color: var(--gold);
+    color: black;
+    border-color: var(--gold);
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
+}
+
+/* Botão de Confirmar (Desabilitado por padrão) */
+.btn-confirm {
+    width: 100%;
     padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-ul.appointment-list li:first-child {
-    border-top-left-radius: var(--radius);
-    border-top-right-radius: var(--radius);
-}
-
-ul.appointment-list li:last-child {
-    border-bottom: none;
-    border-bottom-left-radius: var(--radius);
-    border-bottom-right-radius: var(--radius);
-}
-
-.status-badge {
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-.status-confirmed { background: #e3f2fd; color: #007CC3; }
-.status-completed { background: #e8f5e9; color: #2e7d32; }
-.status-canceled { background: #ffebee; color: #c62828; }
-
-/* Hero Section (Tela Inicial) */
-.hero {
-    text-align: center;
-    padding: 60px 20px;
-    background: linear-gradient(135deg, #ffffff 0%, #f0f7fc 100%);
-    border-radius: var(--radius);
-    margin-bottom: 40px;
-}
-
-.hero h1 {
-    font-size: 42px;
-    color: var(--primary-color);
-    margin-bottom: 15px;
-}
-
-.hero p {
     font-size: 18px;
-    color: #666;
-    max-width: 600px;
-    margin: 0 auto 30px;
+    opacity: 0.5;
+    pointer-events: none; /* Não clicável até selecionar horário */
+    transition: 0.3s;
+}
+
+.btn-confirm.active {
+    opacity: 1;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+/* --- CORREÇÃO DA PÁGINA DE HORÁRIOS --- */
+
+/* Remove o fundo branco do formulário de data */
+form#dateForm {
+    background-color: transparent !important;
+    padding: 0;
+    margin-bottom: 20px;
+    border: none;
+}
+
+/* Estilo do input de data para ficar escuro */
+input[type="date"] {
+    background-color: #1a1a1a;
+    color: white;
+    border: 1px solid #333;
+    padding: 15px;
+    border-radius: 4px;
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box; /* Garante que não ultrapassa a largura */
+}
+
+/* Ícone do calendário invertido para branco */
+::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+/* GRELHA DE HORÁRIOS */
+.time-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 15px;
+    margin: 30px 0;
+}
+
+/* Botão de Horário (Não selecionado) */
+.time-slot {
+    background: transparent;
+    border: 1px solid #444;
+    color: #aaa;
+    padding: 12px 0;
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.time-slot:hover {
+    border-color: var(--gold);
+    color: white;
+}
+
+/* Botão de Horário (SELECIONADO) */
+.time-slot.selected {
+    background-color: var(--gold);
+    color: black;
+    border-color: var(--gold);
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(197, 160, 89, 0.3);
+    transform: scale(1.05);
+}
+
+/* Área dos Botões de Ação (Voltar + Confirmar) */
+.action-buttons {
+    display: flex;
+    gap: 20px;
+    margin-top: 40px;
+}
+
+/* Botão de Confirmar (Começa desativado) */
+.btn-confirm {
+    flex: 2; /* Ocupa mais espaço que o voltar */
+    background-color: #2ecc71; /* Verde para confirmar */
+    color: white;
+    border: none;
+    opacity: 0.5;
+    pointer-events: none; /* Não clicável */
+    text-align: center;
+}
+
+.btn-confirm.active {
+    opacity: 1;
+    pointer-events: auto
+}
+
+/* --- ESTILOS DA TABELA DE HORÁRIOS --- */
+
+/* Tabela Geral */
+.hours-table {
+    width: 100%;
+    border-collapse: separate; 
+    border-spacing: 0 15px; /* Espaço entre os dias */
+    margin-top: 20px;
+}
+
+/* Cabeçalho da Tabela */
+.hours-table th {
+    text-align: left;
+    color: var(--gold);
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    letter-spacing: 1px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #333;
+}
+
+/* Linhas dos Dias */
+.hours-row td {
+    background-color: #1a1a1a; /* Fundo cinza escuro para cada dia */
+    padding: 15px;
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+    vertical-align: middle;
+}
+
+.hours-row td:first-child { border-left: 1px solid #333; border-radius: 8px 0 0 8px; }
+.hours-row td:last-child { border-right: 1px solid #333; border-radius: 0 8px 8px 0; }
+
+/* Inputs de Hora */
+.hours-table input[type="time"] {
+    background-color: black !important; /* Fundo preto */
+    color: white !important; /* Texto branco */
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 8px;
+    width: 110px;
+    font-family: 'Poppins', sans-serif;
+    margin: 0 5px;
+    text-align: center;
+}
+
+.hours-table input[type="time"]:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 5px rgba(197, 160, 89, 0.5);
+}
+
+/* Checkbox "Fechado" */
+.hours-table input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--gold); /* Cor do check quando marcado */
+    cursor: pointer;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* Estado Desabilitado (Dia Fechado) */
+.hours-row.disabled {
+    opacity: 0.4; /* Deixa o dia "apagado" */
+    pointer-events: none; /* Impede cliques */
+}
+
+/* Mas permite clicar no checkbox para reativar */
+.hours-row.disabled .checkbox-cell {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+/* --- Quick Slots (Home) --- */
+.quick-slots-grid {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    overflow-x: auto; /* Permite scroll lateral no telemóvel se tiver muitos */
+    padding-bottom: 5px;
+}
+
+.quick-slot-btn {
+    background: transparent;
+    border: 1px solid #444;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-family: 'Oswald', sans-serif;
+    min-width: 60px;
+    text-align: center;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.quick-slot-btn:hover {
+    background: var(--gold);
+    color: black;
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(197, 160, 89, 0.2);
+}
+
+/* --- Quick Slots (Correção e Melhoria) --- */
+/* --- CORREÇÃO FINAL: Quick Slots (Botões de Horário) --- */
+
+/* 1. O Contentor: Força o alinhamento horizontal */
+.quick-slots-grid {
+    display: flex !important;
+    flex-direction: row !important; /* Garante linha horizontal */
+    flex-wrap: wrap !important;     /* Permite quebrar linha se não couber */
+    gap: 15px;
+    margin: 20px 0;
+    width: 100%;
+}
+
+/* 2. O Botão (Moldura Dourada) */
+.quick-slot-btn {
+    display: inline-flex !important; /* Garante comportamento de caixa */
+    align-items: center;
+    justify-content: center;
+    
+    /* Visual de Moldura */
+    background-color: transparent !important;
+    border: 1px solid var(--gold) !important; /* Borda Dourada */
+    color: var(--gold) !important;            /* Texto Dourado */
+    
+    /* Tamanho e Forma */
+    padding: 10px 20px;
+    min-width: 70px;
+    border-radius: 0px; /* Quadrado */
+    
+    /* Texto e Cursor */
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+}
+
+/* 3. Hover (Passar o rato) */
+.quick-slot-btn:hover {
+    background-color: var(--gold) !important;
+    color: black !important;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
+}
+
+/* 4. Selecionado (Clicado) */
+.quick-slot-btn.selected {
+    background-color: var(--gold) !important;
+    color: black !important;
+    border-color: var(--gold) !important;
+    box-shadow: 0 0 20px rgba(197, 160, 89, 0.6);
+}
+
+/* 5. Área de Confirmação */
+#quick-confirm-area {
+    display: none;
+    margin-top: 20px;
+    border-top: 1px solid #333;
+    padding-top: 20px;
+    text-align: right; /* Botão à direita */
+}
+
+/* --- ESTILOS DA HOME DO GESTOR --- */
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.admin-card {
+    background: var(--bg-card);
+    border: 1px solid #333;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: block;
+}
+
+.admin-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(197, 160, 89, 0.2);
+}
+
+.admin-icon {
+    font-size: 40px;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.admin-card h3 {
+    color: white;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.admin-card p {
+    color: #888;
+    font-size: 14px;
+    margin: 0;
 }

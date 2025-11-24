@@ -2,82 +2,83 @@
 
 {% block content %}
 <div style="max-width: 900px; margin: 0 auto;">
-    <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="color: var(--primary-color); margin: 0;">⚙️ Configurar Horários</h2>
-            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary" style="padding: 8px 15px; font-size: 14px;">Voltar</a>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h4 style="color: var(--gold); margin-bottom: 5px;">ÁREA ADMINISTRATIVA</h4>
+            <h2 style="color: white; margin: 0;">CONFIGURAR HORÁRIOS</h2>
         </div>
-        <p style="color: #666;">Defina os turnos de trabalho (Manhã e Tarde). O intervalo entre eles será o almoço.</p>
-        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">VOLTAR</a>
+    </div>
+
+    <div class="card">
+        <p style="color: #888; margin-bottom: 20px;">
+            Defina os turnos de trabalho. Desmarque a caixa "Aberto" para fechar o dia.
+        </p>
 
         <form method="POST">
-            <table style="width: 100%; border-collapse: collapse;">
+            <table class="hours-table">
                 <thead>
-                    <tr style="background: #f8f9fa; text-align: left;">
-                        <th style="padding: 10px;">Dia</th>
-                        <th style="padding: 10px;">Status</th>
-                        <th style="padding: 10px;">Turno 1 (Manhã)</th>
-                        <th style="padding: 10px;">Turno 2 (Tarde)</th>
+                    <tr>
+                        <th style="width: 15%;">DIA</th>
+                        <th style="width: 10%;">STATUS</th>
+                        <th>TURNO 1 (MANHÃ)</th>
+                        <th>TURNO 2 (TARDE)</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for day in days_data %}
-                    <tr style="border-bottom: 1px solid #eee;">
-                        <td style="padding: 15px 10px; font-weight: 600;">{{ day.name }}</td>
+                    <tr class="hours-row {% if day.is_closed %}disabled{% endif %}" id="row_{{ day.id }}">
                         
-                        <td style="padding: 10px;">
-                            <label style="cursor: pointer;">
+                        <td style="color: white; font-weight: bold;">{{ day.name }}</td>
+                        
+                        <td class="checkbox-cell" style="text-align: center;">
+                            <label style="color: #aaa; font-size: 14px; cursor: pointer;">
                                 <input type="checkbox" name="closed_{{ day.id }}" 
-                                       id="closed_{{ day.id }}" 
-                                       {% if day.is_closed %}checked{% endif %}
-                                       onchange="toggleDay({{ day.id }})"> 
+                                       onchange="toggleDay({{ day.id }}, this)"
+                                       {% if day.is_closed %}checked{% endif %}>
                                 Fechado
                             </label>
                         </td>
 
-                        <td style="padding: 10px;">
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                <input type="time" name="start1_{{ day.id }}" id="start1_{{ day.id }}" value="{{ day.s1 }}" style="margin:0; width: 90px;">
-                                <span>até</span>
-                                <input type="time" name="end1_{{ day.id }}" id="end1_{{ day.id }}" value="{{ day.e1 }}" style="margin:0; width: 90px;">
+                        <td>
+                            <div style="display: flex; align-items: center; justify-content: center;">
+                                <input type="time" name="start1_{{ day.id }}" value="{{ day.s1 }}">
+                                <span style="color: #666; margin: 0 5px;">até</span>
+                                <input type="time" name="end1_{{ day.id }}" value="{{ day.e1 }}">
                             </div>
                         </td>
 
-                        <td style="padding: 10px;">
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                <input type="time" name="start2_{{ day.id }}" id="start2_{{ day.id }}" value="{{ day.s2 }}" style="margin:0; width: 90px;">
-                                <span>até</span>
-                                <input type="time" name="end2_{{ day.id }}" id="end2_{{ day.id }}" value="{{ day.e2 }}" style="margin:0; width: 90px;">
+                        <td>
+                            <div style="display: flex; align-items: center; justify-content: center;">
+                                <input type="time" name="start2_{{ day.id }}" value="{{ day.s2 }}">
+                                <span style="color: #666; margin: 0 5px;">até</span>
+                                <input type="time" name="end2_{{ day.id }}" value="{{ day.e2 }}">
                             </div>
                         </td>
                     </tr>
-                    <script>
-                        window.addEventListener('load', function() { toggleDay({{ day.id }}); });
-                    </script>
                     {% endfor %}
                 </tbody>
             </table>
 
             <div style="margin-top: 30px; text-align: right;">
-                <button type="submit" class="btn btn-primary" style="padding: 12px 30px; font-size: 16px;">💾 Salvar Horários</button>
+                <button type="submit" class="btn btn-primary" style="padding: 15px 40px;">💾 SALVAR ALTERAÇÕES</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-function toggleDay(id) {
-    const isClosed = document.getElementById('closed_' + id).checked;
-    const inputs = ['start1_', 'end1_', 'start2_', 'end2_'];
-    
-    inputs.forEach(prefix => {
-        const el = document.getElementById(prefix + id);
-        if(el) {
-            el.disabled = isClosed;
-            if(isClosed) el.style.backgroundColor = "#f0f0f0";
-            else el.style.backgroundColor = "white";
+    function toggleDay(id, checkbox) {
+        const row = document.getElementById('row_' + id);
+        
+        if (checkbox.checked) {
+            // Se marcou "Fechado", adiciona a classe visual de desabilitado
+            row.classList.add('disabled');
+        } else {
+            // Se desmarcou, remove a classe e ativa os inputs
+            row.classList.remove('disabled');
         }
-    });
-}
+    }
 </script>
 {% endblock %}

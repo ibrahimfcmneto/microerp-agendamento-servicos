@@ -4,8 +4,11 @@
 
     {% if current_user.email == "admin@barbearia.com" %}
         
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2>👓 Painel do Gestor</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div>
+                <h4 style="color: var(--gold);">PAINEL DE CONTROLO</h4>
+                <h2 style="color: white; margin: 0;">VISÃO GERAL</h2>
+            </div>
             <div>
                 <a href="{{ url_for('create_appointment_admin') }}" class="btn btn-primary" style="margin-right: 10px;">+ Agendar Manual</a>
                 <a href="{{ url_for('manage_working_hours') }}" class="btn btn-secondary">⚙️ Horários</a>
@@ -20,65 +23,109 @@
             <div class="kpi-card">
                 <div class="kpi-label">Taxa de No-Show</div>
                 <div class="kpi-value" style="color: #e74c3c;">{{ "%.1f"|format(taxa_no_show) }}%</div>
-                <small style="color: #999;">Baseado em {{ total_finalized }} finalizados</small>
+                <small style="color: #666;">Baseado em {{ total_finalized }} finalizados</small>
             </div>
         </div>
 
         <div class="card">
-            <h3>📅 Agenda de Hoje e Futuro</h3>
-            <ul class="appointment-list">
-                {% for app in appointments %}
-                <li>
-                    <div>
-                        <strong style="font-size: 18px; color: var(--primary-color);">{{ app.start_time.strftime('%d/%m às %H:%M') }}</strong>
-                        <br>
-                        <span>{{ app.client.name }} — {{ app.service.name }}</span>
-                    </div>
-                    
-                    <div style="text-align: right;">
-                        <span class="status-badge status-{{ app.status.lower() }}">{{ app.status }}</span>
-                        
-                        {% if app.status == 'CONFIRMED' %}
-                        <div style="margin-top: 10px;">
-                            <a href="{{ url_for('update_status', id=app.id, new_status='COMPLETED') }}" style="color:green; font-weight:bold; font-size:13px; margin-right:10px; text-decoration:none;">✅ Concluir</a>
-                            <a href="{{ url_for('update_status', id=app.id, new_status='NO_SHOW') }}" style="color:red; font-weight:bold; font-size:13px; text-decoration:none;">❌ Faltou</a>
-                        </div>
-                        {% endif %}
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-
-    {% else %}
-        
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2>📅 Meus Agendamentos</h2>
-                <a href="{{ url_for('book_service') }}" class="btn btn-primary">Novo Agendamento</a>
-            </div>
-
-            {% if not appointments %}
-                <p style="text-align: center; color: #777; padding: 20px;">Você ainda não possui agendamentos.</p>
-            {% else %}
-                <ul class="appointment-list">
+            <h3 style="color: white; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px;">📅 Próximos Agendamentos</h3>
+            
+            {% if appointments %}
+                <ul class="appointment-list" style="padding: 0; list-style: none;">
                     {% for app in appointments %}
-                    <li>
+                    <li style="background: #1a1a1a; border: 1px solid #333; padding: 20px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <strong>{{ app.start_time.strftime('%d/%m/%Y às %H:%M') }}</strong>
+                            <strong style="font-size: 18px; color: var(--gold); font-family: 'Oswald', sans-serif;">
+                                {{ app.start_time.strftime('%d/%m') }} às {{ app.start_time.strftime('%H:%M') }}
+                            </strong>
                             <br>
-                            <span style="color: #555;">{{ app.service.name }} (R$ {{ app.service.price }})</span>
+                            <span style="color: white;">{{ app.client.name }}</span> <span style="color: #666;">— {{ app.service.name }}</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <span class="status-badge status-{{ app.status.lower() }}">{{ app.status }}</span>
+                        
+                        <div style="text-align: right;">
+                            <span class="status-badge" style="
+                                padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;
+                                background: {% if app.status == 'CONFIRMED' %}#2ecc71{% elif app.status == 'CANCELED' %}#e74c3c{% else %}#95a5a6{% endif %};
+                                color: black;">
+                                {{ app.status }}
+                            </span>
                             
-                            {% if app.status in ['CONFIRMED', 'PENDING'] %}
-                                <a href="{{ url_for('cancel_appointment_client', id=app.id) }}" onclick="return confirm('Tem certeza?')" class="btn btn-danger" style="padding: 5px 15px; font-size: 12px;">Cancelar</a>
+                            {% if app.status == 'CONFIRMED' %}
+                            <div style="margin-top: 10px;">
+                                <a href="{{ url_for('update_status', id=app.id, new_status='COMPLETED') }}" style="color: #2ecc71; font-size: 13px; margin-right: 15px; text-decoration: none;">✅ Concluir</a>
+                                <a href="{{ url_for('update_status', id=app.id, new_status='NO_SHOW') }}" style="color: #e74c3c; font-size: 13px; text-decoration: none;">❌ Faltou</a>
+                            </div>
                             {% endif %}
                         </div>
                     </li>
                     {% endfor %}
                 </ul>
+            {% else %}
+                <p style="color: #666;">Sem agendamentos no momento.</p>
+            {% endif %}
+        </div>
+
+    {% else %}
+        
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <div>
+                    <h4 style="color: var(--gold); margin-bottom: 5px;">MINHA CONTA</h4>
+                    <h2 style="color: white; margin: 0;">MEUS CORTES</h2>
+                </div>
+                <a href="{{ url_for('book_service') }}" class="btn btn-primary">NOVO AGENDAMENTO</a>
+            </div>
+
+            {% if not appointments %}
+                <div class="card" style="text-align: center; padding: 50px;">
+                    <h3 style="color: #666;">Você ainda não tem agendamentos.</h3>
+                    <p style="color: #444; margin-bottom: 20px;">Que tal dar um trato no visual hoje?</p>
+                    <a href="{{ url_for('book_service') }}" class="btn btn-primary">Agendar Agora</a>
+                </div>
+            {% else %}
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    {% for app in appointments %}
+                    <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; border-left: 5px solid {% if app.status == 'CONFIRMED' %}var(--gold){% elif app.status == 'CANCELED' %}#e74c3c{% else %}#2ecc71{% endif %};">
+                        
+                        <div>
+                            <div style="font-size: 14px; color: #888; margin-bottom: 5px;">
+                                {{ app.start_time.strftime('%d de %B de %Y') }}
+                            </div>
+                            <div style="font-size: 24px; font-family: 'Oswald', sans-serif; color: white;">
+                                {{ app.start_time.strftime('%H:%M') }}
+                            </div>
+                            <div style="color: var(--gold); font-weight: 600; margin-top: 5px;">
+                                {{ app.service.name }} <span style="color: #666; font-weight: normal;">(R$ {{ app.service.price }})</span>
+                            </div>
+                        </div>
+
+                        <div style="text-align: right;">
+                            <div style="margin-bottom: 15px;">
+                                <span style="
+                                    padding: 6px 12px; 
+                                    border-radius: 4px; 
+                                    font-size: 12px; 
+                                    font-weight: bold;
+                                    text-transform: uppercase;
+                                    background: {% if app.status == 'CONFIRMED' %}rgba(197, 160, 89, 0.2){% elif app.status == 'CANCELED' %}rgba(231, 76, 60, 0.2){% else %}rgba(46, 204, 113, 0.2){% endif %};
+                                    color: {% if app.status == 'CONFIRMED' %}var(--gold){% elif app.status == 'CANCELED' %}#e74c3c{% else %}#2ecc71{% endif %};
+                                    border: 1px solid {% if app.status == 'CONFIRMED' %}var(--gold){% elif app.status == 'CANCELED' %}#e74c3c{% else %}#2ecc71{% endif %};
+                                ">
+                                    {% if app.status == 'CONFIRMED' %}AGENDADO{% elif app.status == 'CANCELED' %}CANCELADO{% else %}CONCLUÍDO{% endif %}
+                                </span>
+                            </div>
+
+                            {% if app.status == 'CONFIRMED' %}
+                                <a href="{{ url_for('cancel_appointment_client', id=app.id) }}" 
+                                   onclick="return confirm('Tem certeza que deseja cancelar?')" 
+                                   style="color: #e74c3c; font-size: 13px; text-decoration: underline; cursor: pointer;">
+                                   Cancelar Agendamento
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             {% endif %}
         </div>
 
