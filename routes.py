@@ -6,13 +6,49 @@ from datetime import datetime, timedelta, date
 def init_routes(app):
 
 # --- PÁGINA INICIAL ---
+    # No routes.py
+
     @app.route('/')
     def index():
-        # Simples assim! O Python vai buscar o arquivo templates/index.html
-        return render_template('index.html')
+        today_slots = []
+        default_service = None
 
+        if current_user.is_authenticated and current_user.email != "admin@barbearia.com":
+            default_service = Service.query.first()
+            
+            if default_service:
+                today = date.today()
+                weekday = today.weekday()
+                
+                working_hours = WorkingHours.query.filter_by(day_of_week=weekday).all()
+                
+                # CORREÇÃO AQUI: Filtramos para NÃO trazer os cancelados
+                existing_appointments = Appointment.query.filter(
+                    db.func.date(Appointment.start_time) == today,
+                    Appointment.status != 'CANCELED' 
+                ).all()
+                
+                busy_times = [app.start_time.time() for app in existing_appointments]
+                
+                now = datetime.now()
+                
+                for period in working_hours:
+                    current_time = datetime.combine(today, period.start_time)
+                    end_time = datetime.combine(today, period.end_time)
+                    
+                    while current_time + timedelta(minutes=default_service.duration_minutes) <= end_time:
+                        if current_time > now:
+                            if current_time.time() not in busy_times:
+                                today_slots.append(current_time)
+                        current_time += timedelta(minutes=30)
+                        if len(today_slots) >= 6:
+                            break
+                    if len(today_slots) >= 6:
+                        break
+
+        return render_template('index.html', today_slots=today_slots, default_service=default_service)
+    
 # --- REGISTRO DE CLIENTES (Visual Novo) ---
-# --- REGISTRO DE CLIENTES (Com Flash Message) ---
     @app.route('/register', methods=['GET', 'POST'])
     def register():
         if current_user.is_authenticated:
@@ -41,7 +77,7 @@ def init_routes(app):
         return render_template('register.html')
 
     # --- LOGIN (Visual Novo) ---
-# --- LOGIN (Com Flash Message) ---
+    # --- LOGIN (Ajustado para levar todos à Home Inteligente) ---
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
@@ -52,12 +88,12 @@ def init_routes(app):
             
             if user and user.check_password(password):
                 login_user(user)
-                # Redireciona gestor para dashboard, cliente para home
-                if user.email == "admin@barbearia.com":
-                    return redirect(url_for('dashboard'))
+                
+                # MUDANÇA: Agora mandamos TODOS para o 'index'.
+                # O index.html é que vai decidir se mostra o Painel Admin ou a Barbearia.
                 return redirect(url_for('index'))
+                
             else:
-                # AQUI A MUDANÇA: Mensagem de erro elegante
                 flash('Email ou senha incorretos.', 'error')
                 return redirect(url_for('login'))
         
@@ -248,8 +284,10 @@ def init_routes(app):
         day_of_week = selected_date.weekday()
         working_hours = WorkingHours.query.filter_by(day_of_week=day_of_week).all()
         
+        # CORREÇÃO AQUI: Ignorar cancelados
         existing_appointments = Appointment.query.filter(
-            db.func.date(Appointment.start_time) == selected_date
+            db.func.date(Appointment.start_time) == selected_date,
+            Appointment.status != 'CANCELED'
         ).all()
         
         busy_times = [app.start_time.time() for app in existing_appointments]
@@ -266,13 +304,11 @@ def init_routes(app):
                         available_slots.append(current_time)
                 current_time += timedelta(minutes=30)
 
-        # Renderiza o template passando as variáveis necessárias
         return render_template('book_time.html', 
                                service=service, 
                                selected_date=selected_date, 
                                available_slots=available_slots,
                                today=date.today())
-
     # --- PASSO 3: CONFIRMAÇÃO (Com Template) ---
 # --- PASSO 3: CONFIRMAÇÃO (Com Flash Message) ---
     @app.route('/book/confirm/<int:service_id>/<string:slot>')
@@ -281,17 +317,20 @@ def init_routes(app):
         service = Service.query.get_or_404(service_id)
         booking_time = datetime.strptime(slot, '%Y-%m-%d_%H-%M-%S')
         
-        # Validações com Flash
         if booking_time < datetime.now():
              flash('Erro: Você tentou agendar no passado.', 'error')
              return redirect(url_for('book_time', service_id=service.id))
 
-        existing = Appointment.query.filter_by(start_time=booking_time).first()
+        # CORREÇÃO AQUI: Verifica colisão ignorando os cancelados
+        existing = Appointment.query.filter(
+            Appointment.start_time == booking_time,
+            Appointment.status != 'CANCELED'
+        ).first()
+
         if existing:
             flash('Ops! Alguém acabou de reservar este horário.', 'error')
             return redirect(url_for('book_time', service_id=service.id))
             
-        # ... (resto do código de salvar igual) ...
         new_appointment = Appointment(
             client_id=current_user.id,
             service_id=service.id,
@@ -304,24 +343,35 @@ def init_routes(app):
         return render_template('book_confirm.html', service=service, booking_time=booking_time)
     
     # --- CANCELAMENTO PELO CLIENTE ---
+    # --- CANCELAMENTO PELO CLIENTE (Com Regra de 24h) ---
     @app.route('/appointment/cancel/<int:id>')
     @login_required
     def cancel_appointment_client(id):
-        # Busca o agendamento
         appointment = Appointment.query.get_or_404(id)
         
-        # SEGURANÇA: Verifica se o agendamento pertence mesmo ao cliente logado
+        # 1. SEGURANÇA: Verifica se o agendamento é do cliente
         if appointment.client_id != current_user.id:
-            return "<h1>Acesso Negado!</h1> <p>Você não pode cancelar agendamentos de outras pessoas.</p> <a href='/dashboard'>Voltar</a>"
+            flash('Acesso negado.', 'error')
+            return redirect(url_for('dashboard'))
         
-        # Verifica se já não está cancelado ou concluído
+        # 2. VERIFICA SE JÁ PASSOU OU JÁ FOI CANCELADO
         if appointment.status in ['COMPLETED', 'CANCELED', 'NO_SHOW']:
-             return "<h1>Erro!</h1> <p>Este agendamento já foi finalizado ou cancelado.</p> <a href='/dashboard'>Voltar</a>"
+             flash('Este agendamento já foi finalizado.', 'error')
+             return redirect(url_for('dashboard'))
 
-        # Atualiza o status para CANCELED
+        # 3. A REGRA DE OURO: VERIFICAÇÃO DE 24 HORAS
+        time_difference = appointment.start_time - datetime.now()
+        
+        # Se a diferença for menor que 24 horas (timedelta)
+        if time_difference < timedelta(hours=24):
+            flash('Menos de 24h para o agendamento. Entre em contato com o barbeiro pelo número (34) 998820007 para cancelar.', 'error')
+            return redirect(url_for('dashboard'))
+
+        # 4. SE PASSOU NO TESTE, CANCELA
         appointment.status = 'CANCELED'
         db.session.commit()
         
+        flash('Agendamento cancelado com sucesso. O horário está livre novamente.', 'success')
         return redirect(url_for('dashboard'))
 
 # --- AGENDAMENTO MANUAL (Gestor marca pelo cliente) ---
@@ -341,8 +391,8 @@ def init_routes(app):
             try:
                 start_time = datetime.strptime(f"{date_str} {time_str}", '%Y-%m-%d %H:%M')
                 
-                # Verifica colisão
-                if Appointment.query.filter_by(start_time=start_time).first():
+                # CORREÇÃO AQUI: Verifica colisão ignorando cancelados
+                if Appointment.query.filter(Appointment.start_time == start_time, Appointment.status != 'CANCELED').first():
                     flash('Já existe um agendamento neste horário!', 'error')
                 else:
                     new_app = Appointment(
@@ -358,7 +408,6 @@ def init_routes(app):
             except:
                 flash('Erro ao processar data/hora.', 'error')
 
-        # GET: Busca dados para preencher os selects
         clients = Client.query.order_by(Client.name).all()
         services = Service.query.all()
         

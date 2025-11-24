@@ -1,9 +1,53 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+    {% if current_user.email == "admin@barbearia.com" %}
+    
+    <div style="text-align: center; margin-bottom: 40px; padding: 40px 0;">
+        <h4 style="color: var(--gold);">BEM-VINDO AO COMANDO</h4>
+        <h1 style="font-size: 48px; color: white; margin-bottom: 10px;">PERSONALIZAR BARBEARIA</h1>
+        <p style="color: #999; max-width: 600px; margin: 0 auto;">
+            Aqui você define as regras do jogo. Configure os seus serviços, horários e acompanhe o desempenho.
+        </p>
+    </div>
+
+    <div class="admin-grid">
+        <a href="{{ url_for('dashboard') }}" class="admin-card">
+            <span class="admin-icon">📅</span>
+            <h3>Ver Agenda Completa</h3>
+            <p>Aceda ao Dashboard principal para ver marcações e métricas.</p>
+        </a>
+
+        <a href="{{ url_for('list_services') }}" class="admin-card">
+            <span class="admin-icon">✂️</span>
+            <h3>Gerir Serviços</h3>
+            <p>Adicione novos cortes, altere preços e durações.</p>
+        </a>
+
+        <a href="{{ url_for('manage_working_hours') }}" class="admin-card">
+            <span class="admin-icon">⏰</span>
+            <h3>Configurar Horários</h3>
+            <p>Defina os dias de abertura, fecho e horários de almoço.</p>
+        </a>
+
+        <a href="{{ url_for('create_appointment_admin') }}" class="admin-card">
+            <span class="admin-icon">➕</span>
+            <h3>Agendar Manual</h3>
+            <p>Registe rapidamente um cliente que ligou ou apareceu na loja.</p>
+        </a>
+    </div>
+
+
+    {% else %}
+
     <div class="hero card" style="
-        background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=2074&auto=format&fit=crop');
-        background-size: cover; background-position: center; border: none; margin-bottom: 60px; padding: 80px 40px;">
+        background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://deltabarbearia.com.br/wp-content/uploads/2025/04/barbearia-em-fortaleza-7.webp');
+        background-size: cover; 
+        background-position: center; 
+        border: none; 
+        margin-bottom: 60px; 
+        padding: 180px 40px 100px 40px;">
         
         <div style="position: relative; z-index: 2;">
             <h4 style="color: var(--gold); letter-spacing: 3px;">ESTILO & TRADIÇÃO</h4>
@@ -13,38 +57,70 @@
             </p>
             
             {% if current_user.is_authenticated %}
-                {% if current_user.email == "admin@barbearia.com" %}
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Aceder ao Painel</a>
-                {% else %}
-                    <a href="{{ url_for('book_service') }}" class="btn btn-primary">AGENDAR AGORA</a>
-                {% endif %}
+                <a href="{{ url_for('book_service') }}" class="btn btn-primary">AGENDAR AGORA</a>
             {% else %}
                 <a href="{{ url_for('register') }}" class="btn btn-primary">COMEÇAR AGORA</a>
             {% endif %}
         </div>
     </div>
 
-    <div class="kpi-container" style="margin-bottom: 80px;">
-        <div class="kpi-card">
-            <h2 style="color:var(--gold)">01.</h2>
-            <h3 style="color:white">MARCAÇÃO</h3>
-            <p style="font-size:14px; color:#666">Sistema online 24h.</p>
+    {% if current_user.is_authenticated and today_slots %}
+    <div class="card" style="border-left: 5px solid var(--gold); margin-bottom: 40px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <h3 style="color: white; margin: 0; font-size: 20px;">⚡ HORÁRIOS PARA HOJE</h3>
+                <p style="color: #888; margin: 5px 0 0 0; font-size: 14px;">
+                    Reserve agora um <strong>{{ default_service.name }}</strong>
+                </p>
+            </div>
+            
+            <a href="{{ url_for('book_service') }}" style="color: var(--gold); font-size: 13px; text-decoration: underline;">
+                Ver todos os dias
+            </a>
         </div>
-        <div class="kpi-card">
-            <h2 style="color:var(--gold)">02.</h2>
-            <h3 style="color:white">AMBIENTE</h3>
-            <p style="font-size:14px; color:#666">Wifi e café premium.</p>
+
+        <div class="quick-slots-grid">
+            {% for slot in today_slots %}
+            <div class="quick-slot-btn"
+                 onclick="selectQuickSlot(this, '{{ url_for('confirm_booking', service_id=default_service.id, slot=slot.strftime('%Y-%m-%d_%H-%M-%S')) }}', '{{ slot.strftime('%H:%M') }}')">
+                {{ slot.strftime('%H:%M') }}
+            </div>
+            {% endfor %}
         </div>
-        <div class="kpi-card">
-            <h2 style="color:var(--gold)">03.</h2>
-            <h3 style="color:white">MESTRES</h3>
-            <p style="font-size:14px; color:#666">Barbeiros experientes.</p>
+
+        <div id="quick-confirm-area">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="color: white;">Confirmar para <b id="selected-time-display" style="color: var(--gold);">--:--</b>?</span>
+                <a id="btn-quick-confirm" href="#" class="btn btn-primary" style="padding: 10px 30px;">
+                    CONFIRMAR AGENDAMENTO ✅
+                </a>
+            </div>
         </div>
     </div>
+    
+    <script>
+        function selectQuickSlot(element, url, timeText) {
+            const isAlreadySelected = element.classList.contains('selected');
+            document.querySelectorAll('.quick-slot-btn').forEach(btn => btn.classList.remove('selected'));
+            const area = document.getElementById('quick-confirm-area');
+            area.style.display = 'none';
+
+            if (!isAlreadySelected) {
+                element.classList.add('selected');
+                area.style.display = 'block';
+                document.getElementById('selected-time-display').innerText = timeText;
+                document.getElementById('btn-quick-confirm').href = url;
+            }
+        }
+    </script>
+    {% endif %}
 
     <div class="grid-2" style="margin-bottom: 80px;">
         <div class="barber-photo-container">
-            <img src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?q=80&w=2069&auto=format&fit=crop" alt="Barbeiro" class="barber-photo">
+            <img src="https://megaprofissional.com.br/upload/blog/24/mega-profissional-7-dicas-incriveis-para-fazer-sua-barbearia-bombar-1-media.jpg" 
+                 alt="Barbeiro Jerry Patel" 
+                 class="barber-photo"
+                 style="object-position: center;">
         </div>
 
         <div>
@@ -62,4 +138,7 @@
             <a href="{{ url_for('book_service') }}" class="btn btn-secondary">VER SERVIÇOS</a>
         </div>
     </div>
+
+    {% endif %}
+
 {% endblock %}

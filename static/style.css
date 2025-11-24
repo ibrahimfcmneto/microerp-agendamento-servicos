@@ -319,6 +319,7 @@ input[type="date"] {
 .btn-confirm.active {
     opacity: 1;
     pointer-events: auto
+}
 
 /* --- ESTILOS DA TABELA DE HORÁRIOS --- */
 
@@ -391,4 +392,142 @@ input[type="date"] {
 .hours-row.disabled .checkbox-cell {
     pointer-events: auto;
     opacity: 1;
+}
+
+/* --- Quick Slots (Home) --- */
+.quick-slots-grid {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    overflow-x: auto; /* Permite scroll lateral no telemóvel se tiver muitos */
+    padding-bottom: 5px;
+}
+
+.quick-slot-btn {
+    background: transparent;
+    border: 1px solid #444;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-family: 'Oswald', sans-serif;
+    min-width: 60px;
+    text-align: center;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.quick-slot-btn:hover {
+    background: var(--gold);
+    color: black;
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(197, 160, 89, 0.2);
+}
+
+/* --- Quick Slots (Correção e Melhoria) --- */
+/* --- CORREÇÃO FINAL: Quick Slots (Botões de Horário) --- */
+
+/* 1. O Contentor: Força o alinhamento horizontal */
+.quick-slots-grid {
+    display: flex !important;
+    flex-direction: row !important; /* Garante linha horizontal */
+    flex-wrap: wrap !important;     /* Permite quebrar linha se não couber */
+    gap: 15px;
+    margin: 20px 0;
+    width: 100%;
+}
+
+/* 2. O Botão (Moldura Dourada) */
+.quick-slot-btn {
+    display: inline-flex !important; /* Garante comportamento de caixa */
+    align-items: center;
+    justify-content: center;
+    
+    /* Visual de Moldura */
+    background-color: transparent !important;
+    border: 1px solid var(--gold) !important; /* Borda Dourada */
+    color: var(--gold) !important;            /* Texto Dourado */
+    
+    /* Tamanho e Forma */
+    padding: 10px 20px;
+    min-width: 70px;
+    border-radius: 0px; /* Quadrado */
+    
+    /* Texto e Cursor */
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+}
+
+/* 3. Hover (Passar o rato) */
+.quick-slot-btn:hover {
+    background-color: var(--gold) !important;
+    color: black !important;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
+}
+
+/* 4. Selecionado (Clicado) */
+.quick-slot-btn.selected {
+    background-color: var(--gold) !important;
+    color: black !important;
+    border-color: var(--gold) !important;
+    box-shadow: 0 0 20px rgba(197, 160, 89, 0.6);
+}
+
+/* 5. Área de Confirmação */
+#quick-confirm-area {
+    display: none;
+    margin-top: 20px;
+    border-top: 1px solid #333;
+    padding-top: 20px;
+    text-align: right; /* Botão à direita */
+}
+
+/* --- ESTILOS DA HOME DO GESTOR --- */
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.admin-card {
+    background: var(--bg-card);
+    border: 1px solid #333;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: block;
+}
+
+.admin-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(197, 160, 89, 0.2);
+}
+
+.admin-icon {
+    font-size: 40px;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.admin-card h3 {
+    color: white;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.admin-card p {
+    color: #888;
+    font-size: 14px;
+    margin: 0;
 }
