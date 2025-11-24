@@ -118,7 +118,7 @@ def init_routes(app):
 # --- CRUD DE HORÁRIOS (Com Almoço/Dois Turnos) ---
     @app.route('/working_hours', methods=['GET', 'POST'])
     @login_required
-    def manage_working_hours():
+    def manage_working_hours(): 
         if current_user.email != "admin@barbearia.com":
             return redirect(url_for('index'))
 
