@@ -182,17 +182,12 @@ def init_routes(app):
     def list_services():
         # SEGURANÇA: Só o admin pode ver isso
         if current_user.email != "admin@barbearia.com":
-            return "<h1>Acesso Negado!</h1> <p>Apenas o gestor pode acessar esta área.</p> <a href='/'>Voltar</a>"
+            flash('Acesso negado!', 'error')
+            return redirect(url_for('index'))
 
         services = Service.query.all()
-        html = "<h2>📋 Serviços Cadastrados (Modo Gestor)</h2>"
-        html += "<p><a href='/services/new'>➕ Adicionar Novo Serviço</a></p>"
-        html += "<ul>"
-        for s in services:
-            html += f"<li><b>{s.name}</b> - R$ {s.price} [<a href='/services/delete/{s.id}'>Excluir</a>]</li>"
-        html += "</ul>"
-        html += "<br><a href='/'>🏠 Voltar</a>"
-        return html
+        # MUDANÇA: Agora renderizamos o template bonito
+        return render_template('services_list.html', services=services)
 
     @app.route('/services/new', methods=['GET', 'POST'])
     @login_required
@@ -209,18 +204,11 @@ def init_routes(app):
             )
             db.session.add(new_service)
             db.session.commit()
+            flash('Serviço criado com sucesso!', 'success')
             return redirect(url_for('list_services'))
         
-        return """
-        <h2>Novo Serviço</h2>
-        <form method="POST">
-            Nome: <input type="text" name="name" required><br>
-            Duração (min): <input type="number" name="duration" required><br>
-            Preço: <input type="number" step="0.01" name="price" required><br>
-            <button type="submit">Salvar</button>
-        </form>
-        """
-
+        # MUDANÇA: Usamos o template bonito em vez de string HTML
+        return render_template('service_new.html')
     @app.route('/services/delete/<int:id>')
     @login_required
     def delete_service(id):

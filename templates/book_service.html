@@ -1,68 +1,40 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div style="max-width: 700px; margin: 0 auto;">
-    
-    <div style="text-align: center; margin-bottom: 40px;">
-        <h4 style="color: var(--gold);">PASSO 2 DE 3</h4>
-        <h2 style="color: white; font-size: 36px; margin-bottom: 10px;">AGENDAR: <span style="color: var(--gold);">{{ service.name }}</span></h2>
-        <p style="color: #888;">Duração: {{ service.duration_minutes }} min • Valor: R$ {{ service.price }}</p>
+<div style="max-width: 1000px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h4 style="color: var(--gold);">O MENU</h4>
+        <h2 style="color: white; font-size: 40px;">ESCOLHA O SEU SERVIÇO</h2>
+        <p style="color: #777;">Selecione o tratamento que você merece hoje.</p>
     </div>
-
-    <div class="card">
-        <form method="GET" id="dateForm">
-            <label style="color: var(--gold); margin-bottom: 10px; display: block;">1. ESCOLHA A DATA</label>
-            <input type="date" name="date" value="{{ selected_date }}" min="{{ today }}" onchange="document.getElementById('dateForm').submit()">
-        </form>
-
-        <hr style="border: 0; border-top: 1px solid #333; margin: 30px 0;">
-
-        <label style="color: var(--gold); margin-bottom: 15px; display: block;">2. ESCOLHA O HORÁRIO PARA {{ selected_date.strftime('%d/%m') }}</label>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
         
-        {% if available_slots %}
-            <div class="time-grid">
-                {% for slot in available_slots %}
-                    <div class="time-btn" 
-                         onclick="selectTime(this, '{{ url_for('confirm_booking', service_id=service.id, slot=slot.strftime('%Y-%m-%d_%H-%M-%S')) }}')">
-                        {{ slot.strftime('%H:%M') }}
-                    </div>
-                {% endfor %}
-            </div>
+        {% for s in services %}
+        <div class="card service-card">
             
-            <div style="margin-top: 30px;">
-                <a id="confirmButton" href="#" class="btn btn-primary btn-confirm">
-                    CONFIRMAR AGENDAMENTO ➜
+            <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&auto=format&fit=crop&q=60" class="service-img" alt="Serviço">
+            
+            <div class="service-content">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                    <h3 style="margin: 0; font-size: 22px;">{{ s.name }}</h3>
+                    <span class="price-tag">R$ {{ s.price }}</span>
+                </div>
+                
+                <p style="color: #888; font-size: 14px; margin-bottom: 20px;">
+                    <span style="color: var(--gold);">⏱️ {{ s.duration_minutes }} min</span> • Serviço completo com toalha quente e finalização premium.
+                </p>
+
+                <a href="{{ url_for('book_time', service_id=s.id) }}" class="btn btn-primary" style="width: 100%; box-sizing: border-box;">
+                    RESERVAR LUGAR
                 </a>
             </div>
-
-        {% else %}
-            <div style="text-align: center; padding: 40px; background: #221111; border: 1px solid #500; border-radius: 8px;">
-                <h3 style="color: #e74c3c; margin-bottom: 10px;">Agenda Lotada 😔</h3>
-                <p style="color: #ccc;">Não há horários disponíveis para esta data.</p>
-                <p style="color: #ccc;">Por favor, selecione outro dia no calendário acima.</p>
-            </div>
-        {% endif %}
+        </div>
+        {% endfor %}
     </div>
-
-    <div style="text-align: center; margin-top: 20px;">
-        <a href="{{ url_for('book_service') }}" style="color: #666; font-size: 14px;">⬅ Voltar aos Serviços</a>
+    
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="{{ url_for('index') }}" style="color: #555; font-size: 14px;">Voltar ao Início</a>
     </div>
 </div>
-
-<script>
-    function selectTime(element, url) {
-        // 1. Remove a classe 'selected' de todos os botões
-        document.querySelectorAll('.time-btn').forEach(btn => {
-            btn.classList.remove('selected');
-        });
-
-        // 2. Adiciona 'selected' apenas ao botão clicado (fica Dourado)
-        element.classList.add('selected');
-
-        // 3. Ativa o botão de confirmar e coloca o link correto
-        const confirmBtn = document.getElementById('confirmButton');
-        confirmBtn.href = url;
-        confirmBtn.classList.add('active');
-    }
-</script>
 {% endblock %}

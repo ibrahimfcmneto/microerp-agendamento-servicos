@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h4 style="color: var(--gold); margin-bottom: 5px;">ÁREA ADMINISTRATIVA</h4>
+            <h2 style="color: white; margin: 0;">GESTÃO DE SERVIÇOS</h2>
+        </div>
+        <a href="{{ url_for('create_service') }}" class="btn btn-primary">
+            + NOVO SERVIÇO
+        </a>
+    </div>
+
+    <div class="card">
+        {% if services %}
+            <table style="width: 100%; border-collapse: collapse; color: #ccc;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #333; text-align: left;">
+                        <th style="padding: 15px; color: var(--gold);">SERVIÇO</th>
+                        <th style="padding: 15px; color: var(--gold);">DURAÇÃO</th>
+                        <th style="padding: 15px; color: var(--gold);">PREÇO</th>
+                        <th style="padding: 15px; text-align: right; color: var(--gold);">AÇÕES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in services %}
+                    <tr style="border-bottom: 1px solid #222;">
+                        <td style="padding: 15px; font-weight: bold; color: white;">{{ s.name }}</td>
+                        <td style="padding: 15px;">{{ s.duration_minutes }} min</td>
+                        <td style="padding: 15px;">R$ {{ s.price }}</td>
+                        <td style="padding: 15px; text-align: right;">
+                            <a href="{{ url_for('delete_service', id=s.id) }}" 
+                               onclick="return confirm('Tem certeza que deseja apagar este serviço?')"
+                               style="color: #e74c3c; font-size: 12px; border: 1px solid #e74c3c; padding: 5px 10px; border-radius: 4px; text-decoration: none;">
+                               EXCLUIR
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="text-align: center; color: #666; padding: 20px;">Nenhum serviço cadastrado.</p>
+        {% endif %}
+    </div>
+
+    <div style="margin-top: 20px;">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">⬅ Voltar ao Dashboard</a>
+    </div>
+
+</div>
+{% endblock %}

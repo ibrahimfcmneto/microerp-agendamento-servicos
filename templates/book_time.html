@@ -2,36 +2,69 @@
 
 {% block content %}
 <div style="max-width: 600px; margin: 0 auto;">
-    <div class="card">
-        <h2 style="color: var(--primary-color);">📅 Agendar: {{ service.name }}</h2>
-        <p style="color: #666;">Escolha o melhor dia e horário para si.</p>
-        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+    
+    <div class="card" style="border-top: 4px solid var(--gold);">
+        <h4 style="color: var(--gold); margin-bottom: 5px;">AGENDAMENTO</h4>
+        <h2 style="color: white; margin-top: 0;">{{ service.name }}</h2>
+        <p style="color: #888; font-size: 14px;">
+            <span style="margin-right: 15px;">📅 {{ selected_date.strftime('%d/%m/%Y') }}</span>
+            <span>💰 R$ {{ service.price }}</span>
+        </p>
 
-        <form method="GET" id="dateForm" style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <label style="font-weight: bold;">Alterar Data:</label>
-            <input type="date" name="date" value="{{ selected_date }}" min="{{ today }}" onchange="document.getElementById('dateForm').submit()" style="margin-bottom: 0;">
+        <hr style="border-color: #333; margin: 25px 0;">
+
+        <label style="color: #fff; margin-bottom: 10px; display: block;">Alterar Data:</label>
+        <form method="GET" id="dateForm">
+            <input type="date" name="date" value="{{ selected_date }}" min="{{ today }}" onchange="document.getElementById('dateForm').submit()">
         </form>
 
-        <h3>Horários Disponíveis para {{ selected_date.strftime('%d/%m') }}:</h3>
+        <h3 style="color: white; font-size: 18px; margin-top: 30px;">Horários Disponíveis:</h3>
         
-        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;">
-            {% if available_slots %}
+        {% if available_slots %}
+            <div class="time-grid">
                 {% for slot in available_slots %}
-                    <a href="{{ url_for('confirm_booking', service_id=service.id, slot=slot.strftime('%Y-%m-%d_%H-%M-%S')) }}" 
-                       class="btn btn-success" 
-                       style="padding: 10px 20px; font-size: 14px;">
+                    <div class="time-slot" 
+                         onclick="selectTime(this, '{{ url_for('confirm_booking', service_id=service.id, slot=slot.strftime('%Y-%m-%d_%H-%M-%S')) }}')">
                         {{ slot.strftime('%H:%M') }}
-                    </a>
+                    </div>
                 {% endfor %}
-            {% else %}
-                <p style="color: #e74c3c; background: #fff0f0; padding: 10px; border-radius: 4px; width: 100%;">
-                    ❌ Nenhum horário disponível nesta data. Tente outro dia!
-                </p>
-            {% endif %}
-        </div>
+            </div>
 
-        <br><br>
-        <a href="{{ url_for('book_service') }}" class="btn btn-secondary">⬅️ Voltar</a>
+            <div class="action-buttons">
+                <a href="{{ url_for('book_service') }}" class="btn btn-secondary" style="flex: 1; text-align: center;">
+                    ⬅ Voltar
+                </a>
+
+                <a id="btnConfirm" href="#" class="btn btn-confirm">
+                    CONFIRMAR AGENDAMENTO ✅
+                </a>
+            </div>
+
+        {% else %}
+            <div style="background: rgba(231, 76, 60, 0.1); border: 1px solid #e74c3c; padding: 20px; border-radius: 8px; text-align: center; margin-top: 20px;">
+                <h3 style="color: #e74c3c; margin: 0 0 10px 0;">Agenda Cheia 😔</h3>
+                <p style="color: #ccc; font-size: 14px; margin: 0;">Não há horários vagos para esta data. Por favor, escolha outro dia acima.</p>
+            </div>
+            <div style="margin-top: 20px;">
+                <a href="{{ url_for('book_service') }}" class="btn btn-secondary" style="width: 100%; text-align: center;">⬅ Voltar</a>
+            </div>
+        {% endif %}
     </div>
 </div>
+
+<script>
+    function selectTime(element, url) {
+        // 1. Remove a seleção visual de todos os horários
+        document.querySelectorAll('.time-slot').forEach(el => el.classList.remove('selected'));
+        
+        // 2. Marca o horário clicado como selecionado (Fica Dourado)
+        element.classList.add('selected');
+
+        // 3. Configura o botão de confirmar
+        const btnConfirm = document.getElementById('btnConfirm');
+        btnConfirm.href = url;               // Define para onde o botão vai
+        btnConfirm.classList.add('active');  // Ativa visualmente o botão
+        btnConfirm.innerHTML = "CONFIRMAR (" + element.innerText + ") ✅"; // Coloca a hora no texto do botão
+    }
+</script>
 {% endblock %}
