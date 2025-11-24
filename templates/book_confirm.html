@@ -1,20 +1,39 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div style="max-width: 500px; margin: 40px auto; text-align: center;">
-    <div class="card">
-        <h1 style="font-size: 50px; margin: 0;">🎉</h1>
-        <h2 style="color: #27ae60;">Agendamento Confirmado!</h2>
-        <p>Seu horário foi reservado com sucesso.</p>
+<div style="max-width: 500px; margin: 60px auto; text-align: center;">
+    <div class="card" style="padding: 40px;">
         
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: left; margin: 20px 0;">
-            <p><strong>✂️ Serviço:</strong> {{ service.name }}</p>
-            <p><strong>📅 Data:</strong> {{ booking_time.strftime('%d/%m/%Y') }}</p>
-            <p><strong>⏰ Horário:</strong> {{ booking_time.strftime('%H:%M') }}</p>
-            <p><strong>💰 Valor:</strong> R$ {{ service.price }}</p>
+        <div style="font-size: 60px; margin-bottom: 20px;">🎉</div>
+        
+        <h2 style="color: #2ecc71; margin-bottom: 10px; font-family: 'Oswald', sans-serif; letter-spacing: 1px;">
+            AGENDAMENTO CONFIRMADO!
+        </h2>
+        <p style="color: #888; margin-bottom: 30px;">O seu horário foi reservado com sucesso.</p>
+        
+        <div style="background: #1a1a1a; padding: 25px; border-radius: 8px; text-align: left; margin-bottom: 30px; border: 1px solid #333;">
+            <p style="margin: 10px 0; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                <strong style="color: var(--gold);">✂️ Serviço:</strong> 
+                <span style="color: white; float: right;">{{ service.name }}</span>
+            </p>
+            <p style="margin: 10px 0; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                <strong style="color: var(--gold);">📅 Data:</strong> 
+                <span style="color: white; float: right;">{{ booking_time.strftime('%d/%m/%Y') }}</span>
+            </p>
+            <p style="margin: 10px 0; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                <strong style="color: var(--gold);">⏰ Horário:</strong> 
+                <span style="color: white; float: right;">{{ booking_time.strftime('%H:%M') }}</span>
+            </p>
+            <p style="margin: 10px 0 0 0;">
+                <strong style="color: var(--gold);">💰 Valor:</strong> 
+                <span style="color: white; float: right;">R$ {{ service.price }}</span>
+            </p>
         </div>
 
-        <a href="{{ url_for('dashboard') }}" class="btn btn-primary" style="width: 100%;">Ver Meus Agendamentos</a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary" style="width: auto; padding: 12px 40px; min-width: 200px;">
+            VER MEUS AGENDAMENTOS
+        </a>
+
     </div>
 </div>
 {% endblock %}

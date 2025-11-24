@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 0 auto;">
+    <div class="card">
+        <h2 style="color: var(--gold); margin-bottom: 20px;">NOVO SERVIÇO</h2>
+        
+        <form method="POST">
+            <label>Nome do Serviço</label>
+            <input type="text" name="name" placeholder="Ex: Barba Premium" required>
+            
+            <label>Duração (minutos)</label>
+            <input type="number" name="duration" placeholder="Ex: 30" required>
+            
+            <label>Preço (R$)</label>
+            <input type="number" step="0.01" name="price" placeholder="Ex: 45.00" required>
+            
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-primary" style="flex: 1;">SALVAR</button>
+                <a href="{{ url_for('list_services') }}" class="btn btn-secondary">CANCELAR</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
