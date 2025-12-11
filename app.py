@@ -32,7 +32,7 @@ def create_app():
             print(f"⚠️ Admin não encontrado. Criando {admin_email}...")
             
             # Cria o usuário Admin
-            admin = Client(name="Gestor", email=admin_email, phone="000000000")
+            admin = Client(name="Gestor", email="admin_email@gmail.com", phone="000000000")
             admin.set_password("admin123") # Senha definida aqui
             
             db.session.add(admin)
