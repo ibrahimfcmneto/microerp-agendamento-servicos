@@ -1,12 +1,8 @@
 from flask import Flask
 from config import Config
-# Importamos agora também o login_manager e bcrypt do models
-from models import db, login_manager, bcrypt 
+# Adicionamos 'Client' na importação para poder criar o usuário
+from models import db, login_manager, bcrypt, Client 
 from routes import init_routes
-
-#email e senha adm
-#admin@barbearia.com
-#admin123
 
 def create_app():
     app = Flask(__name__)
@@ -24,13 +20,29 @@ def create_app():
     # Inicializa as rotas
     init_routes(app)
 
+    # --- BLOCO DE CRIAÇÃO AUTOMÁTICA DO ADMIN ---
+    # O 'with app.app_context()' permite acessar o banco antes do site ligar
+    with app.app_context():
+        # 1. Garante que as tabelas existem (Cria se não existirem)
+        db.create_all()
+
+        # 2. Verifica se o Admin já existe
+        admin_email = "admin@barbearia.com"
+        if not Client.query.filter_by(email=admin_email).first():
+            print(f"⚠️ Admin não encontrado. Criando {admin_email}...")
+            
+            # Cria o usuário Admin
+            admin = Client(name="Gestor", email=admin_email, phone="000000000")
+            admin.set_password("admin123") # Senha definida aqui
+            
+            db.session.add(admin)
+            db.session.commit()
+            print("✅ Conta de Admin criada com sucesso!")
+        else:
+            print("✅ Admin já existe no banco.")
+
     return app
 
 if __name__ == '__main__':
     app = create_app()
-    
-    with app.app_context():
-        db.create_all()
-        print("✅ Banco e Sistema de Login conectados!")
-
     app.run(debug=True)
