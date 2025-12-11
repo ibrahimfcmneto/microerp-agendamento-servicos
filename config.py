@@ -11,21 +11,28 @@ class Config:
     DB_PASSWORD = os.getenv('DB_PASSWORD')
     DB_HOST = os.getenv('DB_HOST')
     DB_NAME = os.getenv('DB_NAME')
-    # Adicionamos suporte à porta personalizada do Aiven
     DB_PORT = os.getenv('DB_PORT', '3306') 
 
+    # Se faltar variável, avisa no log (ajuda a descobrir o erro 500)
     if not DB_HOST or not DB_USER or not DB_PASSWORD:
-        raise ValueError("ERRO: Variáveis do .env não encontradas.")
+        print("CRITICAL: Variáveis de ambiente faltando!")
 
     _pwd_safe = quote_plus(DB_PASSWORD)
     
-    # --- CONFIGURAÇÃO SSL PARA AIVEN ---
+    # --- CORREÇÃO DO CAMINHO DO CERTIFICADO ---
+    # Pega o diretório onde este arquivo config.py está
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    # Monta o caminho completo para o ca.pem
+    ssl_path = os.path.join(basedir, 'ca.pem')
+    
     ssl_args = {}
-    # Se o arquivo ca.pem estiver na pasta, usamos ele para conectar com segurança
-    if os.path.exists('ca.pem'):
-        ssl_args = {'ssl': {'ca': 'ca.pem'}}
+    # Verifica se o arquivo existe nesse caminho completo
+    if os.path.exists(ssl_path):
+        ssl_args = {'ssl': {'ca': ssl_path}}
+        print(f"Certificado encontrado em: {ssl_path}")
+    else:
+        print(f"ALERTA: Certificado não encontrado em: {ssl_path}")
 
-    # Montamos a URL com a PORTA correta
     SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{DB_USER}:{_pwd_safe}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
     
     SQLALCHEMY_ENGINE_OPTIONS = {'connect_args': ssl_args}
