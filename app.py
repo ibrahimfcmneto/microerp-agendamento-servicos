@@ -1,6 +1,5 @@
 from flask import Flask
 from config import Config
-# Adicionamos 'Client' na importação para poder criar o usuário
 from models import db, login_manager, bcrypt, Client 
 from routes import init_routes
 
@@ -13,33 +12,35 @@ def create_app():
     bcrypt.init_app(app)
     login_manager.init_app(app)
     
-    # Define para onde ir se alguém tentar acessar algo proibido
     login_manager.login_view = 'login' 
     login_manager.login_message = "Por favor, faça login para acessar esta página."
 
-    # Inicializa as rotas
     init_routes(app)
 
-    # --- BLOCO DE CRIAÇÃO AUTOMÁTICA DO ADMIN ---
-    # O 'with app.app_context()' permite acessar o banco antes do site ligar
+    # --- CORREÇÃO: FORÇAR A CRIAÇÃO OU ATUALIZAÇÃO DO ADMIN ---
     with app.app_context():
-        # 1. Garante que as tabelas existem (Cria se não existirem)
         db.create_all()
 
-        # 2. Verifica se o Admin já existe
         admin_email = "admin@barbearia.com"
-        if not Client.query.filter_by(email=admin_email).first():
-            print(f"⚠️ Admin não encontrado. Criando {admin_email}...")
-            
-            # Cria o usuário Admin
-            admin = Client(name="Gestor", email="admin_email@gmail.com", phone="000000000")
-            admin.set_password("admin123") # Senha definida aqui
-            
+        senha_padrao = "admin123"
+        
+        # Procura se o admin já existe
+        admin = Client.query.filter_by(email=admin_email).first()
+
+        if not admin:
+            # Se não existe, cria do zero
+            print("⚠️ Admin não encontrado. Criando novo...")
+            admin = Client(name="Gestor", email=admin_email, phone="000000000")
+            admin.set_password(senha_padrao)
             db.session.add(admin)
-            db.session.commit()
-            print("✅ Conta de Admin criada com sucesso!")
+            print("✅ Conta criada!")
         else:
-            print("✅ Admin já existe no banco.")
+            # Se JÁ existe, ATUALIZA a senha para garantir que está certa
+            print("⚠️ Admin já existe. Atualizando senha para o padrão...")
+            admin.set_password(senha_padrao)
+            print("✅ Senha atualizada!")
+
+        db.session.commit()
 
     return app
 
