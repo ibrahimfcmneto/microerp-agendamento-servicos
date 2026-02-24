@@ -2,133 +2,218 @@
 
 {% block content %}
 
-    {% if current_user.email == "admin@barbearia.com" %}
-        
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    {% if current_user.role == "barber" %}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">
             <div>
-                <h4 style="color: var(--gold);">PAINEL DE CONTROLO</h4>
-                <h2 style="color: white; margin: 0;">VISÃO GERAL</h2>
+                <h4 style="color: var(--gold); margin: 0; font-size: 14px; letter-spacing: 2px;">PAINEL PROFISSIONAL</h4>
+                <h2 style="color: white; margin: 5px 0 0 0; font-family: 'Oswald', sans-serif; font-size: 32px;">MINHA AGENDA</h2>
             </div>
-            <div>
-                <a href="{{ url_for('create_appointment_admin') }}" class="btn btn-primary" style="margin-right: 10px;">+ Agendar Manual</a>
-                <a href="{{ url_for('manage_working_hours') }}" class="btn btn-secondary">⚙️ Horários</a>
+            <div style="display: flex; gap: 10px;">
+                <a href="{{ url_for('create_appointment_admin') }}" class="btn btn-primary" style="padding: 10px 20px; font-weight: bold;">+ AGENDAR MANUAL</a>
+                <a href="{{ url_for('manage_working_hours') }}" class="btn btn-secondary" style="padding: 10px 15px;">⚙️</a>
             </div>
         </div>
 
-        <div class="kpi-container">
-            <div class="kpi-card">
-                <div class="kpi-label">Receita Estimada</div>
-                <div class="kpi-value">R$ {{ "%.2f"|format(receita) }}</div>
+        <div class="kpi-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px;">
+            <div class="kpi-card" style="background: linear-gradient(145deg, #1a1a1a, #222); padding: 20px; border-radius: 12px; border: 1px solid #333; text-align: center;">
+                <div style="color: #888; font-size: 11px; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;">Receita Hoje (Est.)</div>
+                <div style="color: var(--gold); font-size: 28px; font-weight: bold; font-family: 'Oswald', sans-serif;">R$ {{ "%.2f"|format(receita) }}</div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Taxa de No-Show</div>
-                <div class="kpi-value" style="color: #e74c3c;">{{ "%.1f"|format(taxa_no_show) }}%</div>
-                <small style="color: #666;">Baseado em {{ total_finalized }} finalizados</small>
+
+            <div class="kpi-card" style="background: linear-gradient(145deg, #1a1a1a, #222); padding: 20px; border-radius: 12px; border: 1px solid #333; text-align: center;">
+                <div style="color: #888; font-size: 11px; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;">Taxa de Faltas</div>
+                <div style="color: #e74c3c; font-size: 28px; font-weight: bold; font-family: 'Oswald', sans-serif;">{{ "%.1f"|format(taxa_no_show) }}%</div>
+            </div>
+
+            <div class="kpi-card" style="background: linear-gradient(145deg, #1a1a1a, #222); padding: 20px; border-radius: 12px; border: 1px solid #333; text-align: center;">
+                <div style="color: #888; font-size: 11px; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;">Agendamentos Hoje</div>
+                <div style="color: #2ecc71; font-size: 28px; font-weight: bold; font-family: 'Oswald', sans-serif;">{{ total_agendamentos_hoje }}</div>
             </div>
         </div>
 
-        <div class="card">
-            <h3 style="color: white; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px;">📅 Próximos Agendamentos</h3>
+        <div class="calendar-view">
+            <h3 style="color: white; margin-bottom: 25px; font-size: 18px; display: flex; align-items: center; gap: 10px; font-family: 'Oswald', sans-serif;">
+                <span style="background: var(--gold); width: 4px; height: 20px; display: inline-block;"></span> 
+                PRÓXIMOS ATENDIMENTOS
+            </h3>
             
             {% if appointments %}
-                <ul class="appointment-list" style="padding: 0; list-style: none;">
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    {% set ns = namespace(last_date="") %}
                     {% for app in appointments %}
-                    <li style="background: #1a1a1a; border: 1px solid #333; padding: 20px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong style="font-size: 18px; color: var(--gold); font-family: 'Oswald', sans-serif;">
-                                {{ app.start_time.strftime('%d/%m') }} às {{ app.start_time.strftime('%H:%M') }}
-                            </strong>
-                            <br>
-                            <span style="color: white;">{{ app.client.name }}</span> <span style="color: #666;">— {{ app.service.name }}</span>
-                        </div>
+                        {% set current_date = app.start_time.strftime('%Y-%m-%d') %}
                         
-                        <div style="text-align: right;">
-                            <span class="status-badge" style="
-                                padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;
-                                background: {% if app.status == 'CONFIRMED' %}#2ecc71{% elif app.status == 'CANCELED' %}#e74c3c{% else %}#95a5a6{% endif %};
-                                color: black;">
-                                {{ app.status }}
-                            </span>
-                            
-                            {% if app.status == 'CONFIRMED' %}
-                            <div style="margin-top: 10px;">
-                                <a href="{{ url_for('update_status', id=app.id, new_status='COMPLETED') }}" style="color: #2ecc71; font-size: 13px; margin-right: 15px; text-decoration: none;">✅ Concluir</a>
-                                <a href="{{ url_for('update_status', id=app.id, new_status='NO_SHOW') }}" style="color: #e74c3c; font-size: 13px; text-decoration: none;">❌ Faltou</a>
+                        {% if current_date != ns.last_date %}
+                            <div style="margin-top: 25px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px;">
+                                <div style="background: var(--gold); color: black; padding: 4px 15px; border-radius: 20px; font-weight: bold; font-size: 11px; font-family: 'Oswald', sans-serif;">
+                                    {{ app.start_time.strftime('%d DE %B').upper() }}
+                                </div>
+                                <div style="height: 1px; background: #333; flex-grow: 1;"></div>
                             </div>
-                            {% endif %}
+                            {% set ns.last_date = current_date %}
+                        {% endif %}
+
+                        <div style="background: #1a1a1a; border-radius: 12px; border: 1px solid #333; display: flex; overflow: hidden; {% if app.status == 'COMPLETED' %}opacity: 0.5;{% endif %}">
+                            <div style="background: #222; padding: 15px; min-width: 85px; text-align: center; border-right: 3px solid {% if app.status == 'CONFIRMED' %}var(--gold){% elif app.status == 'COMPLETED' %}#2ecc71{% else %}#e74c3c{% endif %};">
+                                <div style="color: white; font-size: 18px; font-weight: bold; font-family: 'Oswald', sans-serif;">{{ app.start_time.strftime('%H:%M') }}</div>
+                                <div style="color: #666; font-size: 10px;">{{ app.start_time.strftime('%a').upper() }}</div>
+                            </div>
+
+                            <div style="padding: 15px 20px; flex-grow: 1; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="color: white; margin: 0; font-size: 16px;">{{ app.client.name }}</h4>
+                                    <span style="color: var(--gold); font-size: 12px;">✂️ {{ app.service.name }}</span>
+                                </div>
+
+                                <div style="display: flex; gap: 8px;">
+                                    {% if app.status == 'CONFIRMED' %}
+                                        <button onclick="openPaymentModal('{{ app.id }}', '{{ app.service.name }}', '{{ app.client.name }}', '{{ app.service.price }}')" 
+                                                style="background: #2ecc71; color: black; border: none; padding: 8px 15px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase;">
+                                            Concluir
+                                        </button>
+                                        <a href="{{ url_for('update_status', id=app.id, new_status='NO_SHOW') }}" 
+                                           style="border: 1px solid #e74c3c; color: #e74c3c; padding: 8px 15px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none; text-transform: uppercase;">Faltou</a>
+                                    {% else %}
+                                        <span style="font-size: 10px; color: #888; border: 1px solid #444; padding: 4px 10px; border-radius: 4px;">{{ app.status }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
-                    </li>
                     {% endfor %}
-                </ul>
+                </div>
             {% else %}
-                <p style="color: #666;">Sem agendamentos no momento.</p>
+                <div style="text-align: center; padding: 60px; background: #1a1a1a; border-radius: 12px; border: 1px dashed #444;">
+                    <p style="color: #666;">Agenda vazia para hoje.</p>
+                </div>
             {% endif %}
         </div>
 
-    {% else %}
-        
-        <div style="max-width: 800px; margin: 0 auto;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                <div>
-                    <h4 style="color: var(--gold); margin-bottom: 5px;">MINHA CONTA</h4>
-                    <h2 style="color: white; margin: 0;">MEUS CORTES</h2>
-                </div>
-                <a href="{{ url_for('book_service') }}" class="btn btn-primary">NOVO AGENDAMENTO</a>
-            </div>
-
-            {% if not appointments %}
-                <div class="card" style="text-align: center; padding: 50px;">
-                    <h3 style="color: #666;">Você ainda não tem agendamentos.</h3>
-                    <p style="color: #444; margin-bottom: 20px;">Que tal dar um trato no visual hoje?</p>
-                    <a href="{{ url_for('book_service') }}" class="btn btn-primary">Agendar Agora</a>
-                </div>
-            {% else %}
-                <div style="display: flex; flex-direction: column; gap: 20px;">
-                    {% for app in appointments %}
-                    <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; border-left: 5px solid {% if app.status == 'CONFIRMED' %}var(--gold){% elif app.status == 'CANCELED' %}#e74c3c{% else %}#2ecc71{% endif %};">
-                        
-                        <div>
-                            <div style="font-size: 14px; color: #888; margin-bottom: 5px;">
-                                {{ app.start_time.strftime('%d de %B de %Y') }}
-                            </div>
-                            <div style="font-size: 24px; font-family: 'Oswald', sans-serif; color: white;">
-                                {{ app.start_time.strftime('%H:%M') }}
-                            </div>
-                            <div style="color: var(--gold); font-weight: 600; margin-top: 5px;">
-                                {{ app.service.name }} <span style="color: #666; font-weight: normal;">(R$ {{ app.service.price }})</span>
-                            </div>
-                        </div>
-
-                        <div style="text-align: right;">
-                            <div style="margin-bottom: 15px;">
-                                <span style="
-                                    padding: 6px 12px; 
-                                    border-radius: 4px; 
-                                    font-size: 12px; 
-                                    font-weight: bold;
-                                    text-transform: uppercase;
-                                    background: {% if app.status == 'CONFIRMED' %}rgba(197, 160, 89, 0.2){% elif app.status == 'CANCELED' %}rgba(231, 76, 60, 0.2){% else %}rgba(46, 204, 113, 0.2){% endif %};
-                                    color: {% if app.status == 'CONFIRMED' %}var(--gold){% elif app.status == 'CANCELED' %}#e74c3c{% else %}#2ecc71{% endif %};
-                                    border: 1px solid {% if app.status == 'CONFIRMED' %}var(--gold){% elif app.status == 'CANCELED' %}#e74c3c{% else %}#2ecc71{% endif %};
-                                ">
-                                    {% if app.status == 'CONFIRMED' %}AGENDADO{% elif app.status == 'CANCELED' %}CANCELADO{% else %}CONCLUÍDO{% endif %}
-                                </span>
-                            </div>
-
-                            {% if app.status == 'CONFIRMED' %}
-                                <a href="{{ url_for('cancel_appointment_client', id=app.id) }}" 
-                                   onclick="return confirm('Tem certeza que deseja cancelar?')" 
-                                   style="color: #e74c3c; font-size: 13px; text-decoration: underline; cursor: pointer;">
-                                   Cancelar Agendamento
-                                </a>
-                            {% endif %}
+        <div id="paymentModal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+            <div style="background: #1a1a1a; border: 1px solid var(--gold); padding: 25px; border-radius: 15px; width: 95%; max-width: 450px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.7);">
+                <h3 style="color: white; font-family: 'Oswald', sans-serif; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                    FECHAR CONTA: <span id="modalClientName" style="color: var(--gold);"></span>
+                </h3>
+                
+                <form id="paymentForm" method="POST">
+                    <div style="margin-bottom: 15px;">
+                        <label style="color: #888; font-size: 11px; text-transform: uppercase; display: block; margin-bottom: 5px;">Serviço Base</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="baseService" readonly style="flex: 3; background: #222; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 6px;">
+                            <input type="text" id="basePriceDisplay" readonly style="flex: 1; background: #222; border: 1px solid #333; color: var(--gold); padding: 10px; border-radius: 6px; text-align: center; font-weight: bold;">
                         </div>
                     </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+
+                    <div id="extraServicesContainer"></div>
+
+                    <button type="button" onclick="addExtraService()" style="background: transparent; color: var(--gold); border: 1px dashed var(--gold); width: 100%; padding: 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; margin-bottom: 20px; text-transform: uppercase;">
+                        + Serviço Adicional
+                    </button>
+
+                    <div style="background: #222; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="color: #888; font-size: 14px; font-weight: bold;">TOTAL:</span>
+                            <span id="totalValue" style="color: #2ecc71; font-size: 24px; font-weight: bold; font-family: 'Oswald', sans-serif;">R$ 0,00</span>
+                        </div>
+                        
+                        <label style="color: #888; font-size: 11px; text-transform: uppercase; display: block; margin-bottom: 5px;">Forma de Pagamento</label>
+                        <select name="payment_method" required style="width: 100%; background: #111; border: 1px solid var(--gold); color: #fff; padding: 10px; border-radius: 6px;">
+                            <option value="PIX">PIX</option>
+                            <option value="DINHEIRO">DINHEIRO</option>
+                            <option value="DÉBITO">CARTÃO DÉBITO</option>
+                            <option value="CRÉDITO">CARTÃO CRÉDITO</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" style="flex: 2; background: #2ecc71; color: black; border: none; padding: 14px; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase;">Concluir Atendimento</button>
+                        <button type="button" onclick="closePaymentModal()" style="flex: 1; background: transparent; border: 1px solid #555; color: #888; padding: 14px; border-radius: 6px; cursor: pointer;">Voltar</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
+        <script>
+            // Recebe a lista de serviços do Flask para o JavaScript
+            const listaServicosDisponiveis = [
+                {% for s in all_services %}
+                    { id: "{{ s.id }}", name: "{{ s.name }}", price: {{ s.price }} },
+                {% endfor %}
+            ];
+
+            let valorBaseGlobal = 0;
+
+            function openPaymentModal(appId, serviceName, clientName, servicePrice) {
+                document.getElementById('modalClientName').innerText = clientName.split(' ')[0].toUpperCase();
+                document.getElementById('baseService').value = serviceName;
+                valorBaseGlobal = parseFloat(servicePrice);
+                document.getElementById('basePriceDisplay').value = "R$ " + valorBaseGlobal.toFixed(2);
+                document.getElementById('paymentForm').action = "/finish_appointment/" + appId;
+                
+                // Limpa adicionais ao abrir
+                document.getElementById('extraServicesContainer').innerHTML = '';
+                calcularTotal();
+                
+                document.getElementById('paymentModal').style.display = 'flex';
+            }
+
+            function addExtraService() {
+                const container = document.getElementById('extraServicesContainer');
+                const div = document.createElement('div');
+                div.className = 'extra-service-row';
+                div.style = "display: flex; gap: 8px; margin-bottom: 10px; animation: fadeIn 0.3s ease;";
+                
+                let options = '<option value="0" data-price="0">Selecione o adicional...</option>';
+                listaServicosDisponiveis.forEach(s => {
+                    options += `<option value="${s.id}" data-price="${s.price}">${s.name} (+ R$ ${s.price.toFixed(2)})</option>`;
+                });
+
+                div.innerHTML = `
+                    <select name="extra_service_ids" onchange="calcularTotal()" style="flex: 1; background: #111; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 6px;">
+                        ${options}
+                    </select>
+                    <button type="button" onclick="this.parentElement.remove(); calcularTotal();" style="background: #e74c3c; color: white; border: none; padding: 0 15px; border-radius: 6px; cursor: pointer;">&times;</button>
+                `;
+                container.appendChild(div);
+            }
+
+            function calcularTotal() {
+                let total = valorBaseGlobal;
+                const selects = document.getElementsByName('extra_service_ids');
+                
+                selects.forEach(sel => {
+                    const price = parseFloat(sel.options[sel.selectedIndex].getAttribute('data-price'));
+                    total += price;
+                });
+
+                document.getElementById('totalValue').innerText = "R$ " + total.toFixed(2);
+            }
+
+            function closePaymentModal() {
+                document.getElementById('paymentModal').style.display = 'none';
+            }
+        </script>
+
+    {% else %}
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h2 style="color: white; margin: 0; font-family: 'Oswald', sans-serif;">MEUS CORTES</h2>
+                <a href="{{ url_for('book_service') }}" class="btn btn-primary">NOVO HORÁRIO</a>
+            </div>
+
+            {% for app in appointments %}
+                <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; margin-bottom: 12px; border-left: 4px solid {% if app.status == 'CONFIRMED' %}var(--gold){% else %}#444{% endif %}; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="color: #888; font-size: 12px;">{{ app.start_time.strftime('%d/%m') }} às {{ app.start_time.strftime('%H:%M') }}</div>
+                        <div style="color: white; font-weight: bold; font-size: 18px;">{{ app.service.name }}</div>
+                    </div>
+                    <span style="font-size: 10px; color: #888; border: 1px solid #444; padding: 4px 10px; border-radius: 4px;">{{ app.status }}</span>
+                </div>
+            {% endfor %}
+        </div>
     {% endif %}
+
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 
 {% endblock %}

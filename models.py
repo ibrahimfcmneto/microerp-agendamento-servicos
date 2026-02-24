@@ -19,6 +19,11 @@ class Client(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(20), nullable=True)
+    
+    # Campo adicionado para diferenciar Barbeiro de Cliente
+    # Valores padrão: 'customer' ou 'barber'
+    role = db.Column(db.String(20), default='customer', nullable=False)
+    
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     appointments = db.relationship('Appointment', backref='client', lazy=True)

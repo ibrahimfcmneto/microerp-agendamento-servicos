@@ -413,42 +413,6 @@ def init_routes(app):
         
         return render_template('appointment_new.html', clients=clients, services=services)
 
-# --- DASHBOARD (KPIs + Ações Operacionais + Agendamento Manual) ---
-    @app.route('/dashboard')
-    @login_required
-    def dashboard():
-        # Inicializa variáveis padrão para evitar erros
-        appointments = []
-        receita = 0.0
-        taxa_no_show = 0.0
-        total_finalized = 0
-        
-        # LÓGICA DO GESTOR
-        if current_user.email == "admin@barbearia.com":
-            appointments = Appointment.query.order_by(Appointment.start_time.desc()).all()
-            
-            # Cálculos de KPI (Matemática)
-            finalized = [a for a in appointments if a.status in ['COMPLETED', 'NO_SHOW']]
-            total_finalized = len(finalized)
-            count_no_show = len([a for a in finalized if a.status == 'NO_SHOW'])
-            
-            if total_finalized > 0:
-                taxa_no_show = (count_no_show / total_finalized) * 100
-            
-            receita = sum([a.service.price for a in appointments if a.status != 'CANCELED'])
-
-        # LÓGICA DO CLIENTE
-        else:
-            appointments = Appointment.query.filter_by(client_id=current_user.id).order_by(Appointment.start_time.desc()).all()
-
-        # AQUI ESTÁ A MÁGICA:
-        # Em vez de retornar texto HTML, chamamos o arquivo bonito que criamos
-        return render_template('dashboard.html', 
-                               appointments=appointments,
-                               receita=receita,
-                               taxa_no_show=taxa_no_show,
-                               total_finalized=total_finalized)
-
     # --- ROTA DE MUDANÇA DE STATUS (Ação Operacional) ---
     @app.route('/appointment/<int:id>/status/<string:new_status>')
     @login_required
@@ -464,4 +428,101 @@ def init_routes(app):
             appointment.status = new_status
             db.session.commit()
         
+        return redirect(url_for('dashboard'))
+    
+# --- DASHBOARD (KPIs + Ações Operacionais + Agendamento Manual) ---
+    @app.route('/dashboard')
+    @login_required
+    def dashboard():
+        appointments = []
+        receita = 0.0
+        taxa_no_show = 0.0
+        total_finalized = 0
+        all_services = []
+        
+        # 1. Definimos o início e o fim do dia de hoje
+        hoje = date.today()
+        hoje_inicio = datetime.combine(hoje, datetime.min.time())
+        hoje_fim = datetime.combine(hoje, datetime.max.time())
+
+        # LÓGICA DO GESTOR / BARBEIRO
+        if current_user.role == "barber" or current_user.email == "admin@barbearia.com":
+            all_services = Service.query.all()
+            
+            # 2. Agendamentos para exibir na lista (de hoje em diante para não sumir o que vem vindo)
+            appointments = Appointment.query.filter(
+                Appointment.start_time >= hoje_inicio
+            ).order_by(Appointment.start_time.asc()).all()
+            
+            # 3. Filtramos agendamentos APENAS de hoje para os KPIs de Receita e Contagem
+            apps_hoje = [a for a in appointments if a.start_time <= hoje_fim]
+            
+            # KPI: Agendamentos do dia (Contagem apenas de hoje)
+            total_agendamentos_hoje = len(apps_hoje)
+            
+            # KPI: Receita Bruta Estimada (Apenas o que está marcado para hoje e confirmado/concluído)
+            receita = sum([a.service.price for a in apps_hoje if a.status in ['COMPLETED', 'CONFIRMED']])
+            
+            # KPI: Taxa de No-Show (Essa estatística geralmente é melhor manter global ou mensal, 
+            # mas aqui calculamos sobre o total histórico para ser mais realista)
+            all_apps_historico = Appointment.query.all()
+            finalized = [a for a in all_apps_historico if a.status in ['COMPLETED', 'NO_SHOW']]
+            if len(finalized) > 0:
+                count_no_show = len([a for a in finalized if a.status == 'NO_SHOW'])
+                taxa_no_show = (count_no_show / len(finalized)) * 100
+
+            return render_template('dashboard.html', 
+                                    appointments=appointments, # Lista completa de hoje em diante
+                                    receita=receita, # Apenas hoje
+                                    taxa_no_show=taxa_no_show,
+                                    total_agendamentos_hoje=total_agendamentos_hoje, # Novo valor para o KPI
+                                    all_services=all_services)
+
+        else:
+            appointments = Appointment.query.filter_by(client_id=current_user.id)\
+                .filter(Appointment.start_time >= hoje_inicio)\
+                .order_by(Appointment.start_time.asc()).all()
+            return render_template('dashboard.html', appointments=appointments)
+        
+
+    # --- ATENDIMENTO FINALIZADO ---
+    @app.route('/finish_appointment/<int:id>', methods=['POST'])
+    @login_required
+    def finish_appointment(id):
+        if current_user.role != 'barber':
+            flash('Acesso não autorizado.', 'danger')
+            return redirect(url_for('dashboard'))
+        
+        appointment = Appointment.query.get_or_404(id)
+        
+        # Captura os dados do Modal
+        forma_pagamento = request.form.get('payment_method')
+        
+        # Captura a lista de IDs de serviços extras selecionados (getlist é essencial aqui)
+        extra_service_ids = request.form.getlist('extra_service_ids')
+        
+        # Removemos o ID "0" que é o "Selecione..." do template
+        extra_service_ids = [eid for eid in extra_service_ids if eid != "0"]
+
+        # Lógica para processar os extras (apenas log no console por enquanto)
+        # Se você tiver uma tabela de relação, aqui você faria o loop para salvar
+        servicos_nomes = []
+        for sid in extra_service_ids:
+            s = Service.query.get(sid)
+            if s:
+                servicos_nomes.append(s.name)
+
+        appointment.status = 'COMPLETED'
+        
+        print(f"💰 FECHAMENTO: Cliente {appointment.client.name}")
+        print(f"💳 Pagamento: {forma_pagamento}")
+        print(f"✂️ Adicionais: {', '.join(servicos_nomes) if servicos_nomes else 'Nenhum'}")
+        
+        try:
+            db.session.commit()
+            flash(f'Corte de {appointment.client.name} finalizado! Total recebido via {forma_pagamento}.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('Erro ao salvar no banco de dados.', 'danger')
+            
         return redirect(url_for('dashboard'))
