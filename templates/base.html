@@ -11,8 +11,10 @@
     <header>
         <div class="navbar-container">
             <div class="logo">
-                <a href="{{ url_for('index') }}">
-                    <h1>BARBER<span>SHOP</span></h1>
+                <a href="{{ url_for('index') }}" style="display: flex; align-items: center; text-decoration: none;">
+                    <img src="{{ url_for('static', filename='img/logo.jpg') }}" 
+                        alt="Elite Barbearia" 
+                        style="height: 60px; width: auto; object-fit: contain; border-radius: 8px; transition: transform 0.3s ease;">
                 </a>
             </div>
             <nav>

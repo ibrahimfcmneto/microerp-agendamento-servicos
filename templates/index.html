@@ -50,7 +50,7 @@
         padding: 180px 40px 100px 40px;">
         
         <div style="position: relative; z-index: 2;">
-            <h4 style="color: var(--gold); letter-spacing: 3px;">ESTILO & TRADIÇÃO</h4>
+            <h4 style="color: var(--gold); letter-spacing: 3px;">ESTILO DE VERDADE</h4>
             <h1 style="font-size: 56px; margin-bottom: 20px;">NÃO É APENAS UM CORTE,<br>É UMA <span style="color: var(--gold)">EXPERIÊNCIA.</span></h1>
             <p style="font-size: 18px; color: #ccc; max-width: 500px; margin-bottom: 40px;">
                 Transforme o seu visual com os nossos especialistas. Ambiente clássico, técnica moderna.
@@ -115,17 +115,20 @@
     </script>
     {% endif %}
 
+    <div>
+        <h2 style="color: var(--gold);">NOSSOS ESPECIALISTAS</h2>
+    </div>
+
     <div class="grid-2" style="margin-bottom: 80px;">
         <div class="barber-photo-container">
-            <img src="https://megaprofissional.com.br/upload/blog/24/mega-profissional-7-dicas-incriveis-para-fazer-sua-barbearia-bombar-1-media.jpg" 
+            <img src="static/img/Gordão_barbearia_elite.jpg" 
                  alt="Barbeiro Jerry Patel" 
                  class="barber-photo"
                  style="object-position: center;">
         </div>
 
         <div>
-            <h4 style="color: var(--gold);">O NOSSO ESPECIALISTA</h4>
-            <h2 class="section-title" style="font-size: 42px; line-height: 1.2; color: white;">JERRY PATEL</h2>
+            <h2 class="section-title" style="font-size: 42px; line-height: 1.2; color: white;">Gordão</h2>
             <p style="color: #aaa; margin-bottom: 30px;">
                 "A barbearia não é apenas sobre cortar cabelo. É sobre criar uma identidade."
                 Com prémios internacionais e uma tesoura afiada, o Jerry traz o estilo clássico para a nossa cidade.
@@ -138,6 +141,31 @@
             <a href="{{ url_for('book_service') }}" class="btn btn-secondary">VER SERVIÇOS</a>
         </div>
     </div>
+
+    <!--  Matheus -->
+
+    <div class="grid-2" style="margin-bottom: 80px;">
+    <div class="barber-photo-container">
+        <img src="static/img/Matheus_barbearia_elite.jpg" 
+                alt="Barbeiro Matheus" 
+                class="barber-photo"
+                style="object-position: center;">
+    </div>
+
+    <div>
+        <h2 class="section-title" style="font-size: 42px; line-height: 1.2; color: white;">Matheus</h2>
+        <p style="color: #aaa; margin-bottom: 30px;">
+            "A barbearia não é apenas sobre cortar cabelo. É sobre criar uma identidade."
+            Com prémios internacionais e uma tesoura afiada, o Jerry traz o estilo clássico para a nossa cidade.
+        </p>
+        <ul style="color: #777; padding-left: 20px; list-style-type: square; margin-bottom: 30px;">
+            <li>2019: Barbeiro do Ano</li>
+            <li>2021: Melhor Corte Clássico</li>
+            <li>Mestre em Navalha</li>
+        </ul>
+        <a href="{{ url_for('book_service') }}" class="btn btn-secondary">VER SERVIÇOS</a>
+    </div>
+</div>
 
     {% endif %}
 
