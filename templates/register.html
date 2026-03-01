@@ -2,28 +2,52 @@
 
 {% block content %}
 <div style="max-width: 500px; margin: 40px auto;">
-    <div class="card">
-        <h2 style="text-align: center; color: var(--primary-color);">Crie sua Conta</h2>
-        <p style="text-align: center; color: #666; margin-bottom: 30px;">É rápido, fácil e gratuito.</p>
+    <div class="card" style="background: #1a1a1a; padding: 40px; border-radius: 12px; border: 1px solid #333; color: white;">
+        <h2 style="text-align: center; color: var(--gold); font-family: 'Oswald', sans-serif; text-transform: uppercase;">Criar Conta</h2>
+        <p style="text-align: center; color: #888; margin-bottom: 30px; font-size: 14px;">Cadastre-se para acessar nossa agenda exclusiva.</p>
 
         <form method="POST">
-            <label style="font-weight: 600; font-size: 14px;">Nome Completo</label>
-            <input type="text" name="name" placeholder="Ex: João Silva" required>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 13px; color: #ccc;">Nome Completo</label>
+                <input type="text" name="name" placeholder="Ex: João Silva" required 
+                       style="width: 100%; padding: 12px; background: #222; border: 1px solid #444; border-radius: 6px; color: white; box-sizing: border-box;">
+            </div>
 
-            <label style="font-weight: 600; font-size: 14px;">Email</label>
-            <input type="email" name="email" placeholder="seu@email.com" required>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 13px; color: #ccc;">Email</label>
+                <input type="email" name="email" placeholder="seu@email.com" required 
+                       style="width: 100%; padding: 12px; background: #222; border: 1px solid #444; border-radius: 6px; color: white; box-sizing: border-box;">
+            </div>
 
-            <label style="font-weight: 600; font-size: 14px;">Telefone (WhatsApp)</label>
-            <input type="text" name="phone" placeholder="(xx) 9xxxx-xxxx">
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 13px; color: #ccc;">Telefone (WhatsApp)</label>
+                <input type="text" name="phone" placeholder="(xx) 9xxxx-xxxx" 
+                       style="width: 100%; padding: 12px; background: #222; border: 1px solid #444; border-radius: 6px; color: white; box-sizing: border-box;">
+            </div>
 
-            <label style="font-weight: 600; font-size: 14px;">Senha</label>
-            <input type="password" name="password" placeholder="Crie uma senha segura" required>
+            <div style="margin-bottom: 20px;">
+                <label style="font-size: 13px; color: #ccc;">Senha</label>
+                <input type="password" name="password" placeholder="Crie uma senha segura" required 
+                       style="width: 100%; padding: 12px; background: #222; border: 1px solid #444; border-radius: 6px; color: white; box-sizing: border-box;">
+            </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Criar Conta</button>
+            {# NOVO: O cliente escolhe se é Barbeiro (para o cadastro dinâmico) #}
+            <div style="margin-bottom: 25px;">
+                <label style="font-size: 13px; color: #ccc;">Tipo de Conta</label>
+                <select name="is_barber" style="width: 100%; padding: 12px; background: #222; border: 1px solid #444; border-radius: 6px; color: white;">
+                    <option value="">Cliente (Desejo agendar)</option>
+                    <option value="1">Barbeiro (Desejo gerenciar agenda)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary" 
+                    style="width: 100%; padding: 14px; background: var(--gold); border: none; border-radius: 6px; color: black; font-weight: bold; cursor: pointer; text-transform: uppercase;">
+                Criar Conta
+            </button>
         </form>
         
-        <p style="text-align: center; margin-top: 20px; font-size: 14px;">
-            Já possui cadastro? <a href="{{ url_for('login') }}" style="color: var(--primary-color);">Fazer Login</a>
+        <p style="text-align: center; margin-top: 25px; font-size: 14px; color: #888;">
+            Já possui cadastro? <a href="{{ url_for('login') }}" style="color: var(--gold); text-decoration: none; font-weight: bold;">Fazer Login</a>
         </p>
     </div>
 </div>

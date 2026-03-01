@@ -2,7 +2,7 @@
 
 {% block content %}
 <div style="max-width: 500px; margin: 60px auto; text-align: center;">
-    <div class="card" style="padding: 40px;">
+    <div class="card" style="padding: 40px; background: #1a1a1a; border-radius: 12px; border: 1px solid #333;">
         
         <div style="font-size: 60px; margin-bottom: 20px;">🎉</div>
         
@@ -11,11 +11,18 @@
         </h2>
         <p style="color: #888; margin-bottom: 30px;">O seu horário foi reservado com sucesso.</p>
         
-        <div style="background: #1a1a1a; padding: 25px; border-radius: 8px; text-align: left; margin-bottom: 30px; border: 1px solid #333;">
+        <div style="background: #222; padding: 25px; border-radius: 8px; text-align: left; margin-bottom: 30px; border: 1px solid #333;">
             <p style="margin: 10px 0; border-bottom: 1px solid #333; padding-bottom: 10px;">
                 <strong style="color: var(--gold);">✂️ Serviço:</strong> 
                 <span style="color: white; float: right;">{{ service.name }}</span>
             </p>
+            
+            {# NOVO: Exibe o nome do barbeiro escolhido #}
+            <p style="margin: 10px 0; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                <strong style="color: var(--gold);">👤 Profissional:</strong> 
+                <span style="color: white; float: right;">{{ barber.name }}</span>
+            </p>
+
             <p style="margin: 10px 0; border-bottom: 1px solid #333; padding-bottom: 10px;">
                 <strong style="color: var(--gold);">📅 Data:</strong> 
                 <span style="color: white; float: right;">{{ booking_time.strftime('%d/%m/%Y') }}</span>

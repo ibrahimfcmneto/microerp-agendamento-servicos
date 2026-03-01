@@ -5,23 +5,28 @@
     
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
         <div>
-            <h4 style="color: var(--gold); margin-bottom: 5px;">ÁREA ADMINISTRATIVA</h4>
-            <h2 style="color: white; margin: 0;">GESTÃO DE SERVIÇOS</h2>
+            <h4 style="color: var(--gold); margin-bottom: 5px; font-family: 'Oswald', sans-serif; letter-spacing: 1px;">ÁREA DE GESTÃO</h4>
+            <h2 style="color: white; margin: 0; font-family: 'Oswald', sans-serif;">SERVIÇOS DISPONÍVEIS</h2>
         </div>
-        <a href="{{ url_for('create_service') }}" class="btn btn-primary">
-            + NOVO SERVIÇO
-        </a>
+        {# APENAS ADMIN PODE CRIAR #}
+        {% if current_user.role == 'admin' %}
+            <a href="{{ url_for('create_service') }}" class="btn btn-primary" style="padding: 10px 20px;">
+                + NOVO SERVIÇO
+            </a>
+        {% endif %}
     </div>
 
-    <div class="card">
+    <div class="card" style="background: #1a1a1a; border: 1px solid #333; border-radius: 12px; overflow: hidden;">
         {% if services %}
             <table style="width: 100%; border-collapse: collapse; color: #ccc;">
                 <thead>
-                    <tr style="border-bottom: 2px solid #333; text-align: left;">
+                    <tr style="border-bottom: 2px solid #333; text-align: left; background: #222;">
                         <th style="padding: 15px; color: var(--gold);">SERVIÇO</th>
                         <th style="padding: 15px; color: var(--gold);">DURAÇÃO</th>
                         <th style="padding: 15px; color: var(--gold);">PREÇO</th>
-                        <th style="padding: 15px; text-align: right; color: var(--gold);">AÇÕES</th>
+                        {% if current_user.role == 'admin' %}
+                            <th style="padding: 15px; text-align: right; color: var(--gold);">AÇÕES</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -29,26 +34,28 @@
                     <tr style="border-bottom: 1px solid #222;">
                         <td style="padding: 15px; font-weight: bold; color: white;">{{ s.name }}</td>
                         <td style="padding: 15px;">{{ s.duration_minutes }} min</td>
-                        <td style="padding: 15px;">R$ {{ s.price }}</td>
-                        <td style="padding: 15px; text-align: right;">
-                            <a href="{{ url_for('delete_service', id=s.id) }}" 
-                               onclick="return confirm('Tem certeza que deseja apagar este serviço?')"
-                               style="color: #e74c3c; font-size: 12px; border: 1px solid #e74c3c; padding: 5px 10px; border-radius: 4px; text-decoration: none;">
-                               EXCLUIR
-                            </a>
-                        </td>
+                        <td style="padding: 15px;">R$ {{ "%.2f"|format(s.price) }}</td>
+                        
+                        {% if current_user.role == 'admin' %}
+                            <td style="padding: 15px; text-align: right;">
+                                <a href="{{ url_for('delete_service', id=s.id) }}" 
+                                   onclick="return confirm('Tem certeza que deseja apagar este serviço?')"
+                                   style="color: #e74c3c; font-size: 11px; border: 1px solid #e74c3c; padding: 5px 10px; border-radius: 4px; text-decoration: none;">
+                                   EXCLUIR
+                                </a>
+                            </td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         {% else %}
-            <p style="text-align: center; color: #666; padding: 20px;">Nenhum serviço cadastrado.</p>
+            <p style="text-align: center; color: #666; padding: 40px;">Nenhum serviço cadastrado no momento.</p>
         {% endif %}
     </div>
 
     <div style="margin-top: 20px;">
-        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">⬅ Voltar ao Dashboard</a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary" style="text-decoration: none; color: #888;">⬅ Voltar ao Dashboard</a>
     </div>
-
 </div>
 {% endblock %}

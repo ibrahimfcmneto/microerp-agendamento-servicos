@@ -2,22 +2,30 @@
 
 {% block content %}
 <div style="max-width: 600px; margin: 0 auto;">
-    <div class="card">
-        <h2 style="color: var(--primary-color); margin-bottom: 20px;">📝 Agendamento Manual</h2>
-        <p style="color: #666;">Use esta tela para registrar agendamentos feitos por telefone ou presencialmente.</p>
-        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+    <div class="card" style="background: #1a1a1a; padding: 30px; border-radius: 12px; border: 1px solid #333;">
+        <h2 style="color: var(--gold); margin-bottom: 20px; font-family: 'Oswald', sans-serif;">📝 Agendamento Manual</h2>
+        <p style="color: #888;">Use esta tela para registrar agendamentos feitos por telefone ou presencialmente.</p>
+        <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
 
         <form method="POST">
-            <label style="font-weight: 600;">1. Escolha o Cliente</label>
-            <select name="client_id" required>
+            <label style="font-weight: 600; color: white;">1. Escolha o Cliente</label>
+            <select name="client_id" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 6px;">
                 <option value="" disabled selected>Selecione um cliente...</option>
                 {% for client in clients %}
                     <option value="{{ client.id }}">{{ client.name }} ({{ client.email }})</option>
                 {% endfor %}
             </select>
 
-            <label style="font-weight: 600;">2. Escolha o Serviço</label>
-            <select name="service_id" required>
+            <label style="font-weight: 600; color: white;">2. Selecione o Barbeiro</label>
+            <select name="barber_id" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 6px;">
+                <option value="" disabled selected>Selecione o profissional...</option>
+                {% for barber in barbers %}
+                    <option value="{{ barber.id }}">{{ barber.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label style="font-weight: 600; color: white;">3. Escolha o Serviço</label>
+            <select name="service_id" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 6px;">
                 <option value="" disabled selected>Selecione o serviço...</option>
                 {% for service in services %}
                     <option value="{{ service.id }}">{{ service.name }} — R$ {{ service.price }}</option>
@@ -26,18 +34,18 @@
 
             <div style="display: flex; gap: 20px;">
                 <div style="flex: 1;">
-                    <label style="font-weight: 600;">3. Data</label>
-                    <input type="date" name="date" required>
+                    <label style="font-weight: 600; color: white;">Data</label>
+                    <input type="date" name="date" required style="width: 100%; padding: 10px; border-radius: 6px;">
                 </div>
                 <div style="flex: 1;">
-                    <label style="font-weight: 600;">Hora</label>
-                    <input type="time" name="time" required>
+                    <label style="font-weight: 600; color: white;">Hora</label>
+                    <input type="time" name="time" required style="width: 100%; padding: 10px; border-radius: 6px;">
                 </div>
             </div>
 
-            <div style="margin-top: 20px; display: flex; gap: 10px;">
-                <button type="submit" class="btn btn-primary" style="flex: 1;">💾 Salvar Agendamento</button>
-                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancelar</a>
+            <div style="margin-top: 25px; display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-primary" style="flex: 2; padding: 12px; background: var(--gold); border: none; font-weight: bold; cursor: pointer;">💾 Salvar Agendamento</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary" style="flex: 1; padding: 12px; text-align: center; text-decoration: none; border: 1px solid #555; color: white;">Cancelar</a>
             </div>
         </form>
     </div>

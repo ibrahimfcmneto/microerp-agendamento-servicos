@@ -5,56 +5,50 @@
     
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
         <div>
-            <h4 style="color: var(--gold); margin-bottom: 5px;">ÁREA ADMINISTRATIVA</h4>
-            <h2 style="color: white; margin: 0;">CONFIGURAR HORÁRIOS</h2>
+            <h4 style="color: var(--gold); margin-bottom: 5px; font-family: 'Oswald', sans-serif; letter-spacing: 2px;">GESTÃO DE AGENDA</h4>
+            <h2 style="color: white; margin: 0; font-family: 'Oswald', sans-serif;">HORÁRIOS DE TRABALHO</h2>
         </div>
         <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">VOLTAR</a>
     </div>
 
-    <div class="card">
-        <p style="color: #888; margin-bottom: 20px;">
-            Defina os turnos de trabalho. Desmarque a caixa "Aberto" para fechar o dia.
+    <div class="card" style="background: #1a1a1a; padding: 25px; border-radius: 12px; border: 1px solid #333;">
+        <p style="color: #888; margin-bottom: 25px; font-size: 14px;">
+            Configure seus turnos. Marque como <strong>Fechado</strong> os dias em que não haverá atendimento.
         </p>
 
         <form method="POST">
-            <table class="hours-table">
+            <table style="width: 100%; border-collapse: collapse; color: #ccc;">
                 <thead>
-                    <tr>
-                        <th style="width: 15%;">DIA</th>
-                        <th style="width: 10%;">STATUS</th>
-                        <th>TURNO 1 (MANHÃ)</th>
-                        <th>TURNO 2 (TARDE)</th>
+                    <tr style="border-bottom: 2px solid #333;">
+                        <th style="padding: 15px; text-align: left; color: var(--gold);">DIA</th>
+                        <th style="padding: 15px; text-align: center; color: var(--gold);">STATUS</th>
+                        <th style="padding: 15px; text-align: center; color: var(--gold);">TURNO 1 (MANHÃ)</th>
+                        <th style="padding: 15px; text-align: center; color: var(--gold);">TURNO 2 (TARDE)</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for day in days_data %}
-                    <tr class="hours-row {% if day.is_closed %}disabled{% endif %}" id="row_{{ day.id }}">
+                    <tr id="row_{{ day.id }}" style="border-bottom: 1px solid #333; {% if day.is_closed %}opacity: 0.5;{% endif %}">
+                        <td style="padding: 15px; color: white; font-weight: bold;">{{ day.name }}</td>
                         
-                        <td style="color: white; font-weight: bold;">{{ day.name }}</td>
-                        
-                        <td class="checkbox-cell" style="text-align: center;">
-                            <label style="color: #aaa; font-size: 14px; cursor: pointer;">
-                                <input type="checkbox" name="closed_{{ day.id }}" 
-                                       onchange="toggleDay({{ day.id }}, this)"
+                        <td style="padding: 15px; text-align: center;">
+                            <label style="cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <input type="checkbox" name="closed_{{ day.id }}" onchange="toggleDay({{ day.id }}, this)"
                                        {% if day.is_closed %}checked{% endif %}>
                                 Fechado
                             </label>
                         </td>
 
-                        <td>
-                            <div style="display: flex; align-items: center; justify-content: center;">
-                                <input type="time" name="start1_{{ day.id }}" value="{{ day.s1 }}">
-                                <span style="color: #666; margin: 0 5px;">até</span>
-                                <input type="time" name="end1_{{ day.id }}" value="{{ day.e1 }}">
-                            </div>
+                        <td style="padding: 10px; text-align: center;">
+                            <input type="time" name="start1_{{ day.id }}" value="{{ day.s1 }}" style="background: #222; border: 1px solid #444; color: white; padding: 5px; border-radius: 4px;">
+                            até
+                            <input type="time" name="end1_{{ day.id }}" value="{{ day.e1 }}" style="background: #222; border: 1px solid #444; color: white; padding: 5px; border-radius: 4px;">
                         </td>
 
-                        <td>
-                            <div style="display: flex; align-items: center; justify-content: center;">
-                                <input type="time" name="start2_{{ day.id }}" value="{{ day.s2 }}">
-                                <span style="color: #666; margin: 0 5px;">até</span>
-                                <input type="time" name="end2_{{ day.id }}" value="{{ day.e2 }}">
-                            </div>
+                        <td style="padding: 10px; text-align: center;">
+                            <input type="time" name="start2_{{ day.id }}" value="{{ day.s2 }}" style="background: #222; border: 1px solid #444; color: white; padding: 5px; border-radius: 4px;">
+                            até
+                            <input type="time" name="end2_{{ day.id }}" value="{{ day.e2 }}" style="background: #222; border: 1px solid #444; color: white; padding: 5px; border-radius: 4px;">
                         </td>
                     </tr>
                     {% endfor %}
@@ -62,7 +56,7 @@
             </table>
 
             <div style="margin-top: 30px; text-align: right;">
-                <button type="submit" class="btn btn-primary" style="padding: 15px 40px;">💾 SALVAR ALTERAÇÕES</button>
+                <button type="submit" class="btn btn-primary" style="padding: 15px 40px; font-weight: bold; cursor: pointer;">💾 SALVAR ALTERAÇÕES</button>
             </div>
         </form>
     </div>
@@ -71,13 +65,14 @@
 <script>
     function toggleDay(id, checkbox) {
         const row = document.getElementById('row_' + id);
+        const inputs = row.querySelectorAll('input[type="time"]');
         
         if (checkbox.checked) {
-            // Se marcou "Fechado", adiciona a classe visual de desabilitado
-            row.classList.add('disabled');
+            row.style.opacity = '0.5';
+            inputs.forEach(input => input.disabled = true);
         } else {
-            // Se desmarcou, remove a classe e ativa os inputs
-            row.classList.remove('disabled');
+            row.style.opacity = '1';
+            inputs.forEach(input => input.disabled = false);
         }
     }
 </script>

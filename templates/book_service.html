@@ -4,37 +4,44 @@
 <div style="max-width: 1000px; margin: 0 auto;">
     <div style="text-align: center; margin-bottom: 50px;">
         <h4 style="color: var(--gold);">O MENU</h4>
-        <h2 style="color: white; font-size: 40px;">ESCOLHA O SEU SERVIÇO</h2>
+        <h2 style="color: white; font-size: 40px; font-family: 'Oswald', sans-serif;">ESCOLHA O SEU SERVIÇO</h2>
         <p style="color: #777;">Selecione o tratamento que você merece hoje.</p>
     </div>
     
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
-        
         {% for s in services %}
-        <div class="card service-card">
+        <div class="card service-card" style="background: #1a1a1a; border: 1px solid #333; border-radius: 12px; overflow: hidden;">
+            <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&auto=format&fit=crop&q=60" class="service-img" alt="Serviço" style="width: 100%; height: 200px; object-fit: cover;">
             
-            <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&auto=format&fit=crop&q=60" class="service-img" alt="Serviço">
-            
-            <div class="service-content">
+            <div class="service-content" style="padding: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
-                    <h3 style="margin: 0; font-size: 22px;">{{ s.name }}</h3>
-                    <span class="price-tag">R$ {{ s.price }}</span>
+                    <h3 style="margin: 0; font-size: 22px; color: white; font-family: 'Oswald', sans-serif;">{{ s.name }}</h3>
+                    <span class="price-tag" style="color: var(--gold); font-weight: bold;">R$ {{ s.price }}</span>
                 </div>
                 
                 <p style="color: #888; font-size: 14px; margin-bottom: 20px;">
                     <span style="color: var(--gold);">⏱️ {{ s.duration_minutes }} min</span> • Serviço completo com toalha quente e finalização premium.
                 </p>
 
-                <a href="{{ url_for('book_time', service_id=s.id) }}" class="btn btn-primary" style="width: 100%; box-sizing: border-box;">
-                    RESERVAR LUGAR
-                </a>
+                <form action="{{ url_for('book_time', service_id=s.id) }}" method="GET" style="display: flex; flex-direction: column; gap: 10px;">
+                    <select name="barber_id" required style="background: #222; color: white; padding: 10px; border: 1px solid #444; border-radius: 6px;">
+                        <option value="" disabled selected>Escolha o Barbeiro...</option>
+                        {% for b in barbers %}
+                            <option value="{{ b.id }}">{{ b.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; box-sizing: border-box; padding: 12px;">
+                        RESERVAR LUGAR
+                    </button>
+                </form>
             </div>
         </div>
         {% endfor %}
     </div>
     
     <div style="text-align: center; margin-top: 40px;">
-        <a href="{{ url_for('index') }}" style="color: #555; font-size: 14px;">Voltar ao Início</a>
+        <a href="{{ url_for('index') }}" style="color: #555; font-size: 14px; text-decoration: none;">Voltar ao Início</a>
     </div>
 </div>
 {% endblock %}

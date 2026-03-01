@@ -21,7 +21,7 @@ def create_app():
 
     # --- CONFIGURAÇÃO AUTOMÁTICA DO BANCO E ADMIN ---
     with app.app_context():
-        # db.drop_all() 
+        #db.drop_all() 
         
         # Garante que as tabelas existam sem apagar os dados atuais
         db.create_all() 

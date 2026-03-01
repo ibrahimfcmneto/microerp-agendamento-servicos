@@ -21,13 +21,16 @@
                 <a href="{{ url_for('index') }}">Home</a>
                 
                 {% if current_user.is_authenticated %}
-                    {% if current_user.role == "barber" %}
-                        <a href="{{ url_for('dashboard') }}">Painel Barbeiro</a>
-                        <a href="{{ url_for('list_services') }}">Gerenciar Serviços</a>
+                    {# Acesso para BARBEIROS ou ADMIN #}
+                    {% if current_user.role == "barber" or current_user.email == "admin@barbearia.com" %}
+                        <a href="{{ url_for('dashboard') }}">Painel de Gestão</a>
+                        <a href="{{ url_for('list_services') }}">Serviços</a>
                     {% else %}
+                        {# Visão do CLIENTE #}
                         <a href="{{ url_for('book_service') }}">Agendar</a>
                         <a href="{{ url_for('dashboard') }}">Meus Cortes</a>
                     {% endif %}
+                    
                     <a href="{{ url_for('logout') }}" class="btn-nav">Sair</a>
                 {% else %}
                     <a href="{{ url_for('login') }}">Login</a>
@@ -38,13 +41,13 @@
     </header>
 
     <div class="container">
-        
+        {# Sistema de mensagens flash #}
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
                     <div class="alert" style="padding: 15px; margin-bottom: 20px; border: 1px solid var(--gold); color: white; background-color: #222;">
-                        <span style="color: var(--gold); font-weight: bold;">
-                            {{ 'ERRO' if category == 'error' else 'SUCESSO' }}:
+                        <span style="color: var(--gold); font-weight: bold; text-transform: uppercase;">
+                            {{ category if category != 'error' else 'ATENÇÃO' }}:
                         </span> {{ message }}
                     </div>
                 {% endfor %}
@@ -52,7 +55,6 @@
         {% endwith %}
 
         {% block content %}{% endblock %}
-        
     </div>
 
 </body>
